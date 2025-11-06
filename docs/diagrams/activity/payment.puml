@@ -1,0 +1,42 @@
+
+/'Create an Activity Diagram showing the process of making a payment for a booking.'/
+
+/'Include input of payment details and validation'/
+/'Show both success and failure branches'/
+/'Save as docs/diagrams/activity/payment.png'/
+
+
+
+@startuml
+title Activity Diagram - Making a Payment
+
+|User|
+start
+:Proceed to Payment;
+
+repeat
+  :Enter payment details;
+
+  |System|
+  :Validate details;
+  if (Payment Details Valid?) then (Yes)
+    :Process payment;
+    if (Approved?) then (Yes)
+      :Confirm booking;
+      :Show "Payment Successful";
+      :Email payment receipt to user;
+      |User|
+      :View confirmation and receipt;
+      break
+    else (No)
+      :Show "Payment Failed";
+    endif
+  else (No)
+    :Show "Invalid Details";
+  endif
+repeat while (Retry payment?)
+
+stop
+@enduml
+
+

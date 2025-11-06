@@ -1,0 +1,31 @@
+@startuml login_activity
+|User|
+start
+:Open Application;
+
+|System|
+:Display Login Screen;
+
+repeat
+  |User|
+  :Enter Username and Password;
+  :Click "Login";
+
+  |System|
+  :Validate Credentials;
+repeat while (Credentials valid?) is (no)
+
+|System|
+:Identify User Role;
+if (Is Admin?) then (yes)
+  :Redirect to Admin Dashboard;
+elseif (Is Flight Agent?) then (yes)
+  :Redirect to Flight Agent Dashboard;
+else
+  :Redirect to Customer Dashboard;
+endif
+
+|User|
+:View Dashboard;
+stop
+@enduml

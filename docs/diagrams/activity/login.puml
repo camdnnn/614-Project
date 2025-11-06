@@ -1,4 +1,5 @@
 @startuml login_activity
+
 |User|
 start
 :Open Application;
@@ -8,24 +9,41 @@ start
 
 repeat
   |User|
-  :Enter Username and Password;
+  while (Choose Action?) is (Reset Password)
+    :Click "Reset Password";
+    |System|
+    :Display Reset Password Screen;
+    |User|
+    :Enter Email and New Password;
+    :Confirm Reset;
+    |System|
+    :Update Password;
+    :Display "Password Reset Successful";
+  endwhile (Login)
+
+  |User|
+  :Enter Email and Password;
   :Click "Login";
 
   |System|
   :Validate Credentials;
-repeat while (Credentials valid?) is (no)
 
-|System|
-:Identify User Role;
-if (Is Admin?) then (yes)
-  :Redirect to Admin Dashboard;
-elseif (Is Flight Agent?) then (yes)
-  :Redirect to Flight Agent Dashboard;
-else
-  :Redirect to Customer Dashboard;
-endif
+  backward:Display "Invalid Credentials" Message;
+  repeat while (Valid Credentials?) is (no)
+  ->yes;
+  :Identify User Role;
+
+  switch(User Role?)
+  case (Admin)
+    :Redirect to Admin Dashboard;
+  case (Flight Agent)
+    :Redirect to Flight Agent Dashboard;
+  case (Customer)
+    :Redirect to Customer Dashboard;
+  endswitch
 
 |User|
 :View Dashboard;
 stop
+
 @enduml

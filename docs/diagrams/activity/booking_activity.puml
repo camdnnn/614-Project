@@ -1,0 +1,57 @@
+@startuml
+|User|
+start
+:Select flight from list;
+
+|System|
+:Display flight details and available seats;
+
+|User|
+:Select preferred seat;
+
+|System|
+while (Seat available?) is (no)
+  :Display "Seat not available";
+  |User|
+  :Select a different seat;
+  |System|
+endwhile
+
+|System|
+:Confirm seat;
+:Begin reservation timer;
+:Display timer;
+:Reserve flight and seat temporarily;
+:Prompt for passenger details;
+
+|User|
+:Enter passenger information;
+
+|System|
+:Prompt for baggage selection;
+
+|User|
+:Select baggage option;
+
+|System|
+if (Timer still?) then (yes)
+  label Continue 
+  :Create booking record;
+  :Generate booking reference number;
+  :Display booking confirmation and summary;
+  :Redirect to Payment process;
+else (no)
+  if (Flight and Seat still available) then (yes)
+  goto Continue
+  else (no)
+  :Display "Flight no longer available";
+  :Return to flight selection;
+  detach
+  endif
+endif
+
+|User|
+:View booking confirmation;
+
+stop
+@enduml

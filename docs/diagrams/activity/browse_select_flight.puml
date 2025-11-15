@@ -4,56 +4,57 @@ title Browsing/Selecting a Flight Process
 |User|
 start
 :Access Flight Search;
-:Enter Search Criteria;
-:(Origin, Destination, Date, Airline);
-:Click "Search";
 
-|System|
-:Validate Search Criteria;
-if (Criteria Valid?) then (no)
-  |User|
-  :Display Error Message;
-  :Modify Search Criteria;
-  stop
-else (yes)
+' === MAIN SEARCH LOOP ===
+repeat
+  :Enter Search Criteria;
+  :Click "Search";
+
   |System|
-  :Query Available Flights;
-  :Filter Results;
-  :(Match Origin, Destination, Date, Airline);
-  if (Flights Found?) then (no)
+  :Validate Search Criteria;
+  if (Criteria Valid?) then (no)
     |User|
-    :Display "No Flights Found";
+    :View Validation Error;
     :Modify Search Criteria;
-    stop
   else (yes)
-    :Sort Results;
-    :(By Price, Departure Time, etc.);
-    |User|
-    :View Flight Search Results;
-    :(Flight Number, Airline, Time, Price, Available Seats);
-    :Review Results;
-    repeat
+    |System|
+    :Query Available Flights;
+    :Filter Results;
+
+    if (Flights Found?) then (no)
+      |User|
+      :Display "No Flights Found";
+      :Modify Search Criteria;
+    else (yes)
+      |System|
+      :Sort Results;
+      |User|
+      :View Flight Search Results;
+      :Review Results;
+
       if (Select Flight?) then (yes)
         :Click on Flight;
         |System|
         :Retrieve Flight Details;
-        :(Aircraft Type, Gates, Stops, etc.);
         |User|
         :View Flight Details;
-        :(Full Schedule, Seat Map, Amenities, Price Breakdown);
         if (Proceed to Booking?) then (yes)
+          :Exit Search;
           stop
         else (no)
           :Return to Results;
         endif
-      else
-        :Modify Search;
+      else (no)
+        :Modify Search Criteria;
       endif
-    repeat while (Continue Browsing?) is (yes)
-    |User|
-    :Exit Search;
-    stop
+
+    endif
   endif
-endif
+
+repeat while (Search Again with New Criteria?) is (yes)
+
+|User|
+:Exit Search;
+stop
 
 @enduml

@@ -1,0 +1,24 @@
+@startuml FlightStateDiagram
+title Flight Object State Transition Diagram
+
+[*] --> Scheduled : createFlight
+
+state Scheduled
+state Active
+state Completed
+state Cancelled
+
+' --- Normal flow ---
+Scheduled --> Active   : depart / startFlight
+Active    --> Completed: arrive / endFlight
+
+' --- Emergency termination flow ---
+Active    --> Completed: emergencyLand / handleEmergencyLanding
+
+' --- Cancellation only before departure ---
+Scheduled --> Cancelled: cancel / cancelFlight
+
+Completed --> [*]
+Cancelled --> [*]
+
+@enduml

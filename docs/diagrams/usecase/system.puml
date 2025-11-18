@@ -1,0 +1,91 @@
+@startuml SystemUseCaseDiagram
+left to right direction
+actor "Customer" as Customer
+actor "Flight Agent" as Agent
+actor "System Administrator" as Admin
+
+package "System" {
+    package "Flight Search" {
+        usecase "Search Flights" as UC1
+        usecase "Display Flight Options" as UC2
+    }
+
+    package "Payment Management" {
+        usecase "Make Payment" as UC16
+        usecase "Review Payment" as UC17
+        usecase "Approve Payment" as UC18
+        usecase "Reject Payment" as UC19
+        usecase "View Payment" as UC23
+    }
+
+    package "Booking Management" {
+        usecase "Manage Booking" as UC3
+        usecase "Make Booking" as UC4
+        usecase "Cancel Booking" as UC5
+        usecase "Modify Booking" as UC6
+        usecase "Generate Booking Confirmation" as UC7
+        usecase "View Booking" as UC21
+    }
+
+    package "Customer Profile Management" {
+        usecase "Manage Customer Profile" as UC8
+        usecase "Add Customer Profile" as UC9
+        usecase "Update Customer Profile" as UC11
+        usecase "View Customer Profile" as UC10
+    }
+
+    package "Flight Management" {
+        usecase "Manage Flights" as UC12
+        usecase "Add Flight" as UC13
+        usecase "Update Flight" as UC14
+        usecase "Remove Flight" as UC15
+        usecase "View Flight" as UC22
+    }
+
+
+
+    usecase "View Monthly News" as UC20
+}
+
+actor "Payment Processor" as Processor
+
+UC1 .> UC2 : <<includes>>
+
+Customer --> UC1
+
+UC3 <|-- UC4
+UC3 <|-- UC5
+UC3 <|-- UC6
+
+UC7 .> UC3 : <<includes>>
+
+Customer --> UC3
+Agent --> UC3
+Customer --> UC21
+Agent --> UC21
+
+UC8 <|-- UC9
+UC8 <|-- UC11
+
+Agent --> UC8
+Agent --> UC10
+
+UC12 <|-- UC13
+UC12 <|-- UC14
+UC12 <|-- UC15
+
+Admin --> UC12
+Admin --> UC22
+Agent --> UC22
+
+UC16 .> UC17 : <<includes>>
+UC17 <|-- UC18
+UC17 <|-- UC19
+
+Customer --> UC16
+Processor --> UC17
+
+Customer --> UC20
+Customer --> UC23
+Agent --> UC23
+@enduml

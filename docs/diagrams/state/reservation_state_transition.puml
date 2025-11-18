@@ -1,0 +1,18 @@
+@startuml
+[*] --> Created
+
+Created --> Confirmed : confirmReservation()
+Created --> Cancelled : cancelReservation()
+Created --> Created : updateReservation()
+
+Confirmed --> Paid : processPayment()
+Confirmed --> Cancelled : cancelReservation()
+Confirmed --> Cancelled : reservationTimeout()
+Confirmed --> Confirmed : updateReservation()
+
+Paid --> Cancelled : cancelAfterPayment()
+Paid --> Paid : updateReservation()
+Paid --> [*]
+
+Cancelled --> [*]
+@enduml

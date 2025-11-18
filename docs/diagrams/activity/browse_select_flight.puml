@@ -1,0 +1,60 @@
+@startuml BrowsingFlightActivityDiagram
+title Browsing/Selecting a Flight Process
+
+|User|
+start
+:Access Flight Search;
+
+' === MAIN SEARCH LOOP ===
+repeat
+  :Enter Search Criteria;
+  :Click "Search";
+
+  |System|
+  :Validate Search Criteria;
+  if (Criteria Valid?) then (no)
+    |User|
+    :View Validation Error;
+    :Modify Search Criteria;
+  else (yes)
+    |System|
+    :Query Available Flights;
+    :Filter Results;
+
+    if (Flights Found?) then (no)
+      |User|
+      :Display "No Flights Found";
+      :Modify Search Criteria;
+    else (yes)
+      |System|
+      :Sort Results;
+      |User|
+      :View Flight Search Results;
+      :Review Results;
+
+      if (Select Flight?) then (yes)
+        :Click on Flight;
+        |System|
+        :Retrieve Flight Details;
+        |User|
+        :View Flight Details;
+        if (Proceed to Booking?) then (yes)
+          :Exit Search;
+          stop
+        else (no)
+          :Return to Results;
+        endif
+      else (no)
+        :Modify Search Criteria;
+      endif
+
+    endif
+  endif
+
+repeat while (Search Again with New Criteria?) is (yes)
+
+|User|
+:Exit Search;
+stop
+
+@enduml

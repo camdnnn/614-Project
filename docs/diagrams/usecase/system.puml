@@ -42,8 +42,6 @@ package "System" {
         usecase "View Flight" as UC22
     }
 
-
-
     usecase "View Monthly News" as UC20
 }
 

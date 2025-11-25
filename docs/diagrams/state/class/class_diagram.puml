@@ -1,0 +1,112 @@
+@startuml SystemClassDiagram
+
+
+package "Data Layer" {
+  interface "Repository<T>" as Repository <<boundary>> <<repository>> {
+    + create(data: T): void
+    + read(id: string): T
+    + update(id: string, data: T): void
+    + delete(id: string): void
+    + readAll(): List<T>
+  }
+
+  class Booking {
+    - id:number 
+    - customerId: number
+    - eventId: number
+    - date: Date
+    - status: string
+    + getId(): string
+    + getCustomerId(): string
+    + getEventId(): string
+    + getDate(): Date
+    + getStatus(): string
+    + setStatus(status: string): void
+  }
+
+  class BookingRepository {
+    + create(data: Booking): void
+    + read(id: string): Booking
+    + update(id: string, data: Booking): void
+    + delete(id: string): void
+    + readAll(): List<Booking>
+  }
+
+  class Flight {
+    - id: number
+    - departure: Date
+    - arrival: Date
+    - origin: string
+    - destination: string
+    + getId(): string
+    + getDeparture(): Date
+    + getArrival(): Date
+    + getOrigin(): string
+    + getDestination(): string
+  }
+
+  class FlightRepository {
+    + create(data: Booking): void
+    + read(id: string): Booking
+    + update(id: string, data: Booking): void
+    + delete(id: string): void
+    + readAll(): List<Booking>
+  }
+
+  class Payment {
+    - id:number 
+    - amount: float
+    - date: Date
+    - method: string
+    + getId(): string
+    + getAmount(): float
+    + getDate(): Date
+    + getMethod(): string
+
+  }
+
+  class PaymentRepository {
+    + create(data: Payment): void
+    + read(id: string): Payment
+    + update(id: string, data: Payment): void
+    + delete(id: string): void
+    + readAll(): List<Payment>
+  }
+
+
+  enum Role {
+    CUSTOMER
+    FLIGHT_AGENT
+    ADMIN
+  }
+
+  class User {
+    -id: number
+    -name:string
+    -email:string
+    -role:Role
+    +getId(): number
+    +getName():string
+    +getEmail():string
+    +getRole():string
+  }
+
+  class UserRepository {
+    + create(data: User): void
+    + read(id: string): User
+    + update(id: string, data: User): void
+    + delete(id: string): void
+    + readAll(): List<User>
+  }
+  BookingRepository ..|> Repository
+  BookingRepository -> Booking
+  FlightRepository ..|> Repository
+  FlightRepository -> Flight
+  PaymentRepository ..|> Repository
+  PaymentRepository -> Payment 
+  UserRepository ..|> Repository
+  UserRepository -> User
+}
+
+
+@enduml

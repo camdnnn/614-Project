@@ -4,7 +4,7 @@
 ' Note: Getters/setters and constructors are omitted from entity classes as per project spec:
 ' "You don't need to show constructors/destructor, getters/setters."
 package "Data Layer" {
-  interface "Repository<T>" as Repository <<boundary>> <<repository>> {
+  interface "Repository<T>" as Repository <<repository>> {
     + create(data: T): void
     + read(id: string): T
     + update(id: string, data: T): void
@@ -21,7 +21,7 @@ package "Data Layer" {
     - status: string
   }
 
-  class BookingRepository <<boundary>> {
+  class BookingRepository <<repository>> {
     + create(data: Booking): void
     + read(id: string): Booking
     + update(id: string, data: Booking): void
@@ -40,7 +40,7 @@ package "Data Layer" {
     - availableSeats: number
   }
 
-  class FlightRepository <<boundary>> {
+  class FlightRepository <<repository>> {
     + create(data: Flight): void
     + read(id: string): Flight
     + update(id: string, data: Flight): void
@@ -57,7 +57,7 @@ package "Data Layer" {
     - method: string
   }
 
-  class PaymentRepository <<boundary>> {
+  class PaymentRepository <<repository>> {
     + create(data: Payment): void
     + read(id: string): Payment
     + update(id: string, data: Payment): void
@@ -79,7 +79,7 @@ package "Data Layer" {
     - role: Role
   }
 
-  class UserRepository <<boundary>> {
+  class UserRepository <<repository>> {
     + create(data: User): void
     + read(id: string): User
     + update(id: string, data: User): void

@@ -55,7 +55,7 @@ UC3 <|-- UC4
 UC3 <|-- UC5
 UC3 <|-- UC6
 
-UC7 .> UC3 : <<includes>>
+UC3 .> UC7 : <<includes>>
 
 Customer --> UC3
 Agent --> UC3

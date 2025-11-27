@@ -440,19 +440,40 @@ package "Presentation Layer" {
   AdminMenuView --> FlightResultsView : navigates to
 
   ' View-Entity associations
-  FlightResultsView ..> Flight : displays
-  BookingView ..> Flight : displays
-  BookingView ..> Booking : displays
-  BookingConfirmationView ..> Booking : displays
-  BookingConfirmationView ..> Flight : displays
-  BookingHistoryView ..> Booking : displays
-  PaymentView ..> Payment : creates
-  PaymentHistoryView ..> Payment : displays
-  CustomerProfileView ..> User : displays
-  FlightManagementView ..> Flight : manages
+  ' FlightResultsView ..> Flight : displays
+  ' BookingView ..> Flight : displays
+  ' BookingView ..> Booking : displays
+  ' BookingConfirmationView ..> Booking : displays
+  ' BookingConfirmationView ..> Flight : displays
+  ' BookingHistoryView ..> Booking : displays
+  ' PaymentView ..> Payment : creates
+  ' PaymentHistoryView ..> Payment : displays
+  ' CustomerProfileView ..> User : displays
+  ' FlightManagementView ..> Flight : manages
 }
 
 package "Business Logic Layer" {
+
+  ' AppController centralizes interactions from Presentation -> BLL
+  class AppController <<Singleton>> {
+    - authService: AuthService
+    - userService: UserService
+    - flightService: FlightService
+    - bookingService: BookingService
+    - paymentService: PaymentService
+    - newsService: NewsService
+    + login(username: String, password: String): User
+    + logout(userId: number): void
+    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
+    + createBooking(customerId: number, flightId: number, seat: String): Booking
+    + processPaymentWithStrategy(bookingId: number, amount: float, strategy: PaymentStrategy): Payment
+    + getMonthlyNews(): MonthlyNews
+    + refreshNews(): void
+    + getBookingsForCustomer(customerId: number): List<Booking>
+    + createUser(user: User): void
+    + updateUser(id: number, user: User): void
+    + addViewSubscriber(view: Object): void
+  }
 
   ' -----------------------------
   ' Authentication / User Logic
@@ -540,20 +561,30 @@ package "Business Logic Layer" {
   NewsService --> MonthlyNewsRepository : queries
 
   ' -----------------------------
-  ' Dependencies (Presentation Layer → BLL)
+  ' App Controller Dependencies
   ' -----------------------------
-  LoginView --> AuthService : calls to
-  RoleSelectionView --> AuthService : calls to
-  CustomerMenuView --> FlightService : calls to
-  CustomerMenuView --> BookingService : calls to
-  CustomerMenuView --> PaymentService : calls to
-  CustomerMenuView --> NewsService : calls to
-  AgentMenuView --> BookingService : calls to
-  AgentMenuView --> UserService : calls to
-  AdminMenuView --> FlightService : calls to
-  AdminMenuView --> UserService : calls to
-  MonthlyNewsView --> NewsService : calls to
+  AppController *-- AuthService
+  AppController *-- UserService
+  AppController *-- FlightService
+  AppController *-- BookingService
+  AppController *-- PaymentService
+  AppController *-- NewsService
 
+  LoginView --> AppController : calls to
+  RoleSelectionView --> AppController : calls to
+  CustomerMenuView --> AppController : calls to
+  AgentMenuView --> AppController : calls to
+  AdminMenuView --> AppController : calls to
+  MonthlyNewsView --> AppController : calls to
+  BookingHistoryView --> AppController : calls to
+  FlightSearchView --> AppController : calls to
+  PaymentHistoryView --> AppController : calls to
+  FlightResultsView --> AppController : calls to
+  CustomerProfileView --> AppController : calls to
+  FlightManagementView --> AppController : calls to
+  BookingView --> AppController : calls to
+  BookingConfirmationView --> AppController : calls to
+  PaymentView --> AppController : calls to
   
 }
 

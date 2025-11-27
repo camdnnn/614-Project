@@ -1,5 +1,10 @@
 @startuml SystemClassDiagram
 
+skinparam classAttributeIconSize 0
+hide circle
+skinparam class {
+    FontStyle bold
+}
 
 ' Note: Getters/setters and constructors are omitted from entity classes as per project spec:
 ' "You don't need to show constructors/destructor, getters/setters."
@@ -438,18 +443,6 @@ package "Presentation Layer" {
   ' Admin flow
   AdminMenuView --> FlightManagementView : navigates to
   AdminMenuView --> FlightResultsView : navigates to
-
-  ' View-Entity associations
-  ' FlightResultsView ..> Flight : displays
-  ' BookingView ..> Flight : displays
-  ' BookingView ..> Booking : displays
-  ' BookingConfirmationView ..> Booking : displays
-  ' BookingConfirmationView ..> Flight : displays
-  ' BookingHistoryView ..> Booking : displays
-  ' PaymentView ..> Payment : creates
-  ' PaymentHistoryView ..> Payment : displays
-  ' CustomerProfileView ..> User : displays
-  ' FlightManagementView ..> Flight : manages
 }
 
 package "Business Logic Layer" {

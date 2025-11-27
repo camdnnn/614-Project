@@ -87,6 +87,23 @@ package "Data Layer" {
     + readAll(): List<User>
   }
 
+  class MonthlyNews <<entity>> {
+    - id: number
+    - title: string
+    - content: string
+    - date: Date
+  }
+
+  class MonthlyNewsRepository <<repository>> {
+    + create(data: MonthlyNews): void
+    + read(id: string): MonthlyNews
+    + update(id: string, data: MonthlyNews): void
+    + delete(id: string): void
+    + readAll(): List<MonthlyNews>
+  }
+
+  MonthlyNewsRepository ..|> Repository
+  MonthlyNewsRepository -> MonthlyNews
   BookingRepository ..|> Repository
   BookingRepository -> Booking
   FlightRepository ..|> Repository
@@ -96,6 +113,7 @@ package "Data Layer" {
   UserRepository ..|> Repository
   UserRepository -> User
 }
+
   ' TODO: Remove "Password Reset" flow from login.puml activity diagram
   ' Password reset is not in the project spec requirements
   ' TODO: Remove "Baggage Selection" from booking_activity.puml activity diagram
@@ -388,7 +406,7 @@ package "Presentation Layer" {
     - backButton: JButton
     - refreshButton: JButton
     + display(): void
-    + displayNews(title: String, content: String, date: Date): void
+    + displayNews(news: MonthlyNews): void
     + clearNews(): void
     + addBackListener(listener: ActionListener): void
     + addRefreshListener(listener: ActionListener): void
@@ -432,6 +450,111 @@ package "Presentation Layer" {
   PaymentHistoryView ..> Payment : displays
   CustomerProfileView ..> User : displays
   FlightManagementView ..> Flight : manages
+}
+
+package "Business Logic Layer" {
+
+  ' -----------------------------
+  ' Authentication / User Logic
+  ' -----------------------------
+  class AuthService <<control>> {
+    + login(email: String, password: String): User
+    + logout(userId: number): void
+    + verifyRole(user: User, requiredRole: Role): boolean
+  }
+
+  class UserService <<control>> {
+    - userRepository: UserRepository
+    + getUserById(id: number): User
+    + getAllUsers(): List<User>
+    + searchUsers(query: String): List<User>
+    + createUser(user: User): void
+    + updateUser(id: number, user: User): void
+  }
+
+
+  ' -----------------------------
+  ' Flight Logic
+  ' -----------------------------
+  class FlightService <<control>> {
+    - flightRepository: FlightRepository
+    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
+    + getFlightById(id: number): Flight
+    + getAllFlights(): List<Flight>
+    + addFlight(flight: Flight): void
+    + updateFlight(id: number, flight: Flight): void
+    + removeFlight(id: number): void
+    + hasAvailableSeats(flightId: number): boolean
+  }
+
+
+  ' -----------------------------
+  ' Booking Logic
+  ' -----------------------------
+  class BookingService <<control>> {
+    - bookingRepository: BookingRepository
+    - flightService: FlightService
+    + createBooking(customerId: number, flightId: number, seat: String): Booking
+    + cancelBooking(id: number): void
+    + updateBooking(id: number, seat: String): void
+    + getBookingById(id: number): Booking
+    + getAllBookings(): List<Booking>
+    + getBookingsForCustomer(customerId: number): List<Booking>
+  }
+
+
+  ' -----------------------------
+  ' Payment Logic
+  ' -----------------------------
+  class PaymentService <<control>> {
+    - paymentRepository: PaymentRepository
+    - bookingService: BookingService
+    + processPayment(bookingId: number, amount: float, method: String): Payment
+    + getPaymentsForCustomer(customerId: number): List<Payment>
+    + getAllPayments(): List<Payment>
+  }
+
+
+  ' -----------------------------
+  ' News Logic (Static Content)
+  ' -----------------------------
+  class NewsService <<control>> {
+    + getMonthlyNews(): MonthlyNews
+    + refreshNews(): void
+  }
+
+  ' -----------------------------
+  ' Dependencies (BLL → Data Layer)
+  ' -----------------------------
+  AuthService --> UserRepository : queries
+  UserService --> UserRepository : queries
+
+  FlightService --> FlightRepository : queries
+
+  BookingService --> BookingRepository : queries
+  BookingService --> FlightService : calls to
+
+  PaymentService --> PaymentRepository : queries
+  PaymentService --> BookingService : calls to
+
+  NewsService --> MonthlyNewsRepository : queries
+
+  ' -----------------------------
+  ' Dependencies (Presentation Layer → BLL)
+  ' -----------------------------
+  LoginView --> AuthService : calls to
+  RoleSelectionView --> AuthService : calls to
+  CustomerMenuView --> FlightService : calls to
+  CustomerMenuView --> BookingService : calls to
+  CustomerMenuView --> PaymentService : calls to
+  CustomerMenuView --> NewsService : calls to
+  AgentMenuView --> BookingService : calls to
+  AgentMenuView --> UserService : calls to
+  AdminMenuView --> FlightService : calls to
+  AdminMenuView --> UserService : calls to
+  MonthlyNewsView --> NewsService : calls to
+
+  
 }
 
 @enduml

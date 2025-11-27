@@ -6,9 +6,9 @@
 package "Data Layer" {
   interface "Repository<T>" as Repository <<repository>> {
     + create(data: T): void
-    + read(id: string): T
-    + update(id: string, data: T): void
-    + delete(id: string): void
+    + read(id: number): T
+    + update(id: number, data: T): void
+    + delete(id: number): void
     + readAll(): List<T>
   }
 
@@ -23,9 +23,9 @@ package "Data Layer" {
 
   class BookingRepository <<repository>> {
     + create(data: Booking): void
-    + read(id: string): Booking
-    + update(id: string, data: Booking): void
-    + delete(id: string): void
+    + read(id: number): Booking
+    + update(id: number, data: Booking): void
+    + delete(id: number): void
     + readAll(): List<Booking>
   }
 
@@ -42,9 +42,9 @@ package "Data Layer" {
 
   class FlightRepository <<repository>> {
     + create(data: Flight): void
-    + read(id: string): Flight
-    + update(id: string, data: Flight): void
-    + delete(id: string): void
+    + read(id: number): Flight
+    + update(id: number, data: Flight): void
+    + delete(id: number): void
     + readAll(): List<Flight>
   }
 
@@ -59,9 +59,9 @@ package "Data Layer" {
 
   class PaymentRepository <<repository>> {
     + create(data: Payment): void
-    + read(id: string): Payment
-    + update(id: string, data: Payment): void
-    + delete(id: string): void
+    + read(id: number): Payment
+    + update(id: number, data: Payment): void
+    + delete(id: number): void
     + readAll(): List<Payment>
   }
 
@@ -81,9 +81,9 @@ package "Data Layer" {
 
   class UserRepository <<repository>> {
     + create(data: User): void
-    + read(id: string): User
-    + update(id: string, data: User): void
-    + delete(id: string): void
+    + read(id: number): User
+    + update(id: number, data: User): void
+    + delete(id: number): void
     + readAll(): List<User>
   }
 
@@ -96,9 +96,9 @@ package "Data Layer" {
 
   class MonthlyNewsRepository <<repository>> {
     + create(data: MonthlyNews): void
-    + read(id: string): MonthlyNews
-    + update(id: string, data: MonthlyNews): void
-    + delete(id: string): void
+    + read(id: number): MonthlyNews
+    + update(id: number, data: MonthlyNews): void
+    + delete(id: number): void
     + readAll(): List<MonthlyNews>
   }
 

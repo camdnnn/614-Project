@@ -473,6 +473,10 @@ package "Business Logic Layer" {
     + createUser(user: User): void
     + updateUser(id: number, user: User): void
     + addViewSubscriber(view: Object): void
+    + getAllFlights(): List<Flight>
+    + addFlight(flight: Flight): void
+    + updateFlight(id: number, flight: Flight): void
+    + removeFlight(id: number): void
   }
 
   ' -----------------------------

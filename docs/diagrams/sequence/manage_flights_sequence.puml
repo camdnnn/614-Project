@@ -1,0 +1,182 @@
+@startuml ManageFlightsSequenceDiagram
+title Manage Flights Sequence Diagram
+
+' Actors and Participants
+actor "System Administrator" as Admin
+participant "AdminMenuView\n<<boundary>>" as AdminMenu
+participant "FlightManagementView\n<<boundary>>" as FlightMgmtView
+participant "AppController\n<<control>>\n<<Singleton>>" as AppController
+participant "FlightService\n<<control>>" as FlightService
+participant "FlightRepository\n<<repository>>" as FlightRepo
+entity "Flight\n<<entity>>" as Flight
+
+' ===== Main Flow: Navigate to Flight Management =====
+Admin -> AdminMenu : clicks Manage Flights
+activate AdminMenu
+AdminMenu -> FlightMgmtView : display()
+deactivate AdminMenu
+activate FlightMgmtView
+
+FlightMgmtView -> AppController : getAllFlights()
+activate AppController
+AppController -> FlightService : getAllFlights()
+activate FlightService
+FlightService -> FlightRepo : readAll()
+activate FlightRepo
+FlightRepo --> FlightService : List<Flight>
+deactivate FlightRepo
+FlightService --> AppController : List<Flight>
+deactivate FlightService
+AppController --> FlightMgmtView : List<Flight>
+deactivate AppController
+
+FlightMgmtView -> FlightMgmtView : displayFlights(flights: List<Flight>)
+FlightMgmtView --> Admin : shows flight list
+
+' ===== Alt 1: Add Flight =====
+group Add Flight
+    Admin -> FlightMgmtView : enters flight details\n(origin, destination, dates, price, seats)
+    Admin -> FlightMgmtView : clicks Add button
+    
+    FlightMgmtView -> FlightMgmtView : getOrigin(): String,\ngetDestination(): String,\ngetDepartureDate(): String,\ngetArrivalDate(): String,\ngetPrice(): String,\ngetSeats(): String
+    
+    note right of FlightMgmtView : Creates Flight object from form data
+    
+    FlightMgmtView -> AppController : addFlight(flight: Flight)
+    activate AppController
+    
+    AppController -> FlightService : addFlight(flight: Flight)
+    activate FlightService
+    
+    create Flight
+    FlightService -> Flight : <<create>>\nnew Flight(...)
+    
+    FlightService -> FlightRepo : create(data: Flight)
+    activate FlightRepo
+    FlightRepo --> FlightService : void
+    deactivate FlightRepo
+    
+    FlightService --> AppController : void
+    deactivate FlightService
+    
+    AppController --> FlightMgmtView : void
+    deactivate AppController
+    
+    FlightMgmtView -> FlightMgmtView : clearFields()
+    FlightMgmtView -> AppController : getAllFlights()
+    activate AppController
+    AppController -> FlightService : getAllFlights()
+    activate FlightService
+    FlightService -> FlightRepo : readAll()
+    activate FlightRepo
+    FlightRepo --> FlightService : List<Flight>
+    deactivate FlightRepo
+    FlightService --> AppController : List<Flight>
+    deactivate FlightService
+    AppController --> FlightMgmtView : List<Flight>
+    deactivate AppController
+    FlightMgmtView -> FlightMgmtView : displayFlights(flights: List<Flight>)
+    FlightMgmtView --> Admin : displays updated flight list\nwith success message
+end
+
+' ===== Alt 2: Update Flight =====
+group Update Flight
+    Admin -> FlightMgmtView : selects flight from table
+    FlightMgmtView -> FlightMgmtView : getSelectedFlight(): Flight
+    FlightMgmtView -> FlightMgmtView : displayFlightDetails(flight: Flight)
+    FlightMgmtView --> Admin : populates form with flight details
+    
+    Admin -> FlightMgmtView : modifies flight details
+    Admin -> FlightMgmtView : clicks Update button
+    
+    FlightMgmtView -> FlightMgmtView : getFlightId(): String,\ngetOrigin(): String,\ngetDestination(): String,\ngetDepartureDate(): String,\ngetArrivalDate(): String,\ngetPrice(): String,\ngetSeats(): String
+    
+    note right of FlightMgmtView : Creates updated Flight object from form data
+    
+    FlightMgmtView -> AppController : updateFlight(id: number, flight: Flight)
+    activate AppController
+    
+    AppController -> FlightService : updateFlight(id: number, flight: Flight)
+    activate FlightService
+    
+    FlightService -> FlightRepo : update(id: number, data: Flight)
+    activate FlightRepo
+    FlightRepo --> FlightService : void
+    deactivate FlightRepo
+    
+    FlightService --> AppController : void
+    deactivate FlightService
+    
+    AppController --> FlightMgmtView : void
+    deactivate AppController
+    
+    FlightMgmtView -> FlightMgmtView : clearFields()
+    FlightMgmtView -> AppController : getAllFlights()
+    activate AppController
+    AppController -> FlightService : getAllFlights()
+    activate FlightService
+    FlightService -> FlightRepo : readAll()
+    activate FlightRepo
+    FlightRepo --> FlightService : List<Flight>
+    deactivate FlightRepo
+    FlightService --> AppController : List<Flight>
+    deactivate FlightService
+    AppController --> FlightMgmtView : List<Flight>
+    deactivate AppController
+    FlightMgmtView -> FlightMgmtView : displayFlights(flights: List<Flight>)
+    FlightMgmtView --> Admin : displays updated flight list\nwith success message
+end
+
+' ===== Alt 3: Remove Flight =====
+group Remove Flight
+    Admin -> FlightMgmtView : selects flight from table
+    Admin -> FlightMgmtView : clicks Remove button
+    
+    FlightMgmtView -> FlightMgmtView : getSelectedFlight(): Flight
+    FlightMgmtView --> Admin : displays confirmation dialog
+    
+    Admin -> FlightMgmtView : confirms removal
+    
+    FlightMgmtView -> AppController : removeFlight(id: number)
+    activate AppController
+    
+    AppController -> FlightService : removeFlight(id: number)
+    activate FlightService
+    
+    FlightService -> FlightRepo : delete(id: number)
+    activate FlightRepo
+    FlightRepo --> FlightService : void
+    deactivate FlightRepo
+    
+    FlightService --> AppController : void
+    deactivate FlightService
+    
+    AppController --> FlightMgmtView : void
+    deactivate AppController
+    
+    FlightMgmtView -> AppController : getAllFlights()
+    activate AppController
+    AppController -> FlightService : getAllFlights()
+    activate FlightService
+    FlightService -> FlightRepo : readAll()
+    activate FlightRepo
+    FlightRepo --> FlightService : List<Flight>
+    deactivate FlightRepo
+    FlightService --> AppController : List<Flight>
+    deactivate FlightService
+    AppController --> FlightMgmtView : List<Flight>
+    deactivate AppController
+    FlightMgmtView -> FlightMgmtView : displayFlights(flights: List<Flight>)
+    FlightMgmtView --> Admin : displays updated flight list\nwith success message
+end
+
+' ===== Navigation: Back to Admin Menu =====
+Admin -> FlightMgmtView : clicks Back button
+FlightMgmtView -> AdminMenu : display()
+deactivate FlightMgmtView
+activate AdminMenu
+AdminMenu --> Admin : shows admin menu
+deactivate AdminMenu
+
+@enduml
+

@@ -28,7 +28,8 @@ CREATE TABLE Bookings (
     seat_number VARCHAR(10) NOT NULL,
     booking_date DATETIME NOT NULL,
     status VARCHAR(50) NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES Users(id)
+    FOREIGN KEY (customer_id) REFERENCES Users(id),
+    FOREIGN KEY (flight_id) REFERENCES Flights(id)
 );
 
 CREATE TABLE Payments (

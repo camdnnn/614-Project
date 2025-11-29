@@ -1,10 +1,3 @@
--- Clear tables
-DELETE FROM Payments;
-DELETE FROM Bookings;
-DELETE FROM Flights;
-DELETE FROM Users;
-DELETE FROM MonthlyNews;
-
 -- USERS
 INSERT INTO Users (name, email, password, role) VALUES
 ('Alice Johnson', 'alice@example.com', 'password123', 'customer'),

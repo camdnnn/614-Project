@@ -1,0 +1,42 @@
+@startuml SystemStateDiagram
+
+[*] --> Login                       : startApplication
+
+Login --> RoleSelection             : success
+
+RoleSelection --> Logout            : back
+RoleSelection --> CustomerMenu      : selectCustomer
+RoleSelection --> AgentMenu         : selectAgent
+RoleSelection --> AdminMenu         : selectAdmin
+
+CustomerMenu --> FlightSearch       : searchFlights
+CustomerMenu --> BookingManager     : manageBookings
+CustomerMenu --> ViewNews           : viewMonthlyNews
+CustomerMenu --> Logout             : logout
+
+FlightSearch --> BookingManager     : bookFlight
+BookingManager --> PaymentProcessor : processPayment
+PaymentProcessor --> BookingManager : paymentSuccess
+
+FlightSearch --> CustomerMenu       : back
+BookingManager --> CustomerMenu     : back
+ViewNews --> CustomerMenu           : back
+
+AgentMenu --> CustomerManager       : manageCustomers
+AgentMenu --> BookingManager        : manageBookings
+AgentMenu --> FlightManager         : manageFlights
+AgentMenu --> Logout                 : logout
+
+CustomerManager --> AgentMenu       : back
+BookingManager --> AgentMenu        : back
+FlightManager --> AgentMenu         : back
+
+AdminMenu --> FlightManager         : manageFlights
+AdminMenu --> Logout                : logout
+
+FlightManager --> AdminMenu         : back
+
+Logout --> Login                    : loginAgain
+Logout --> [*]                      : exitApplication
+
+@enduml

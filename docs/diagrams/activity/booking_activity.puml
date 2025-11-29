@@ -28,12 +28,6 @@ endwhile
 :Enter passenger information;
 
 |System|
-:Prompt for baggage selection;
-
-|User|
-:Select baggage option;
-
-|System|
 if (Timer end AND flight/seat not available?) then (no)
   :Create booking record;
   :Generate booking reference number;

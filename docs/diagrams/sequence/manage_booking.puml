@@ -1,0 +1,250 @@
+@startuml ManageBookingsFullSequenceDiagram
+title Manage Bookings (UC3, UC4, UC5, UC6, UC7) - Full Sequence Diagram
+
+' ===============================
+' Actors & Participants
+' ===============================
+actor "Customer / Flight Agent" as User
+participant "HomeMenuView\n<<boundary>>" as HomeMenu
+participant "ManageBookingView\n<<boundary>>" as ManageBookingView
+participant "BookingFormView\n<<boundary>>" as BookingForm
+participant "ModifyBookingView\n<<boundary>>" as ModifyBookingView
+participant "CancelBookingView\n<<boundary>>" as CancelBookingView
+participant "AppController\n<<control>>\n<<Singleton>>" as AppController
+participant "BookingService\n<<control>>" as BookingService
+participant "BookingRepository\n<<repository>>" as BookingRepo
+entity "Booking\n<<entity>>" as Booking
+
+' =====================================================
+' UC3 – Manage Booking (Navigation + Fetch Bookings)
+' =====================================================
+User -> HomeMenu : clicks "Manage Bookings"
+activate HomeMenu
+
+HomeMenu -> ManageBookingView : display()
+deactivate HomeMenu
+activate ManageBookingView
+
+alt User is Flight Agent
+    ManageBookingView -> User : prompt customerID
+    User -> ManageBookingView : enters customerID
+end
+
+ManageBookingView -> AppController : getBookings(customerID?)
+activate AppController
+AppController -> BookingService : getBookings(customerID?)
+activate BookingService
+BookingService -> BookingRepo : readByCustomer(customerID?)
+activate BookingRepo
+BookingRepo --> BookingService : List<Booking>
+deactivate BookingRepo
+BookingService --> AppController : List<Booking>
+deactivate BookingService
+AppController --> ManageBookingView : List<Booking>
+deactivate AppController
+
+ManageBookingView -> ManageBookingView : displayBookings(list)
+ManageBookingView --> User : shows bookings\nand operations:\n- Make Booking\n- Cancel Booking\n- Modify Booking
+
+' -----------------------------------------------------
+group Back to Home Menu
+    User -> ManageBookingView : clicks Back
+    ManageBookingView -> HomeMenu : display()
+    deactivate ManageBookingView
+    activate HomeMenu
+    HomeMenu --> User : home screen shown
+    deactivate HomeMenu
+end
+' -----------------------------------------------------
+
+
+' =====================================================
+' UC4 – Make Booking
+' =====================================================
+group Make Booking
+    User -> ManageBookingView : selects "Make Booking"
+    ManageBookingView -> BookingForm : display flight search()
+    activate BookingForm
+
+    User -> BookingForm : enters search details\n(origin, destination, dates, pax)
+    BookingForm -> AppController : searchFlights(criteria)
+    activate AppController
+    AppController -> FlightService : searchFlights(criteria)
+    ' Assume FlightService exists in system
+    activate FlightService
+    FlightService -> FlightRepository : readMatching(criteria)
+    activate FlightRepository
+    FlightRepository --> FlightService : List<Flight>
+    deactivate FlightRepository
+    FlightService --> AppController : List<Flight>
+    deactivate FlightService
+    AppController --> BookingForm : List<Flight>
+    deactivate AppController
+
+    BookingForm -> BookingForm : displayFlightOptions()
+
+    User -> BookingForm : selects flight + fare
+    BookingForm -> BookingForm : displaySummary()
+
+    User -> BookingForm : confirms booking
+
+    BookingForm -> AppController : createBooking(booking)
+    activate AppController
+    AppController -> BookingService : createBooking(booking)
+    activate BookingService
+
+    create Booking
+    BookingService -> Booking : <<create>>
+
+    BookingService -> BookingRepo : create(booking)
+    activate BookingRepo
+    BookingRepo --> BookingService : void
+    deactivate BookingRepo
+
+    BookingService --> AppController : void
+    deactivate BookingService
+    AppController --> BookingForm : confirmation
+    deactivate AppController
+
+    BookingForm --> User : booking created message
+
+    ' Auto-trigger UC7
+    BookingForm -> AppController : generateConfirmation(bookingID)
+end
+
+
+' =====================================================
+' UC5 – Cancel Booking
+' =====================================================
+group Cancel Booking
+    User -> ManageBookingView : selects "Cancel Booking"
+    ManageBookingView -> CancelBookingView : display()
+    activate CancelBookingView
+
+    CancelBookingView -> AppController : getActiveBookings(customerID?)
+    activate AppController
+    AppController -> BookingService : getActiveBookings(customerID?)
+    activate BookingService
+    BookingService -> BookingRepo : readActive(customerID?)
+    activate BookingRepo
+    BookingRepo --> BookingService : List<Booking>
+    deactivate BookingRepo
+    BookingService --> AppController : List<Booking>
+    deactivate BookingService
+    AppController --> CancelBookingView : List<Booking>
+    deactivate AppController
+
+    CancelBookingView -> User : showActiveBookings()
+
+    User -> CancelBookingView : selects booking to cancel
+    CancelBookingView -> CancelBookingView : displayCancellationDetails()
+
+    User -> CancelBookingView : confirms cancellation
+
+    CancelBookingView -> AppController : cancelBooking(id)
+    activate AppController
+    AppController -> BookingService : cancelBooking(id)
+    activate BookingService
+    BookingService -> BookingRepo : updateStatus(id, "cancelled")
+    activate BookingRepo
+    BookingRepo --> BookingService : void
+    deactivate BookingRepo
+    BookingService --> AppController : void
+    deactivate BookingService
+    AppController --> CancelBookingView : cancellation success
+    deactivate AppController
+
+    CancelBookingView --> User : cancellation successful
+
+    ' Auto-trigger UC7
+    CancelBookingView -> AppController : generateConfirmation(id)
+end
+
+
+' =====================================================
+' UC6 – Modify Booking
+' =====================================================
+group Modify Booking
+    User -> ManageBookingView : selects "Modify Booking"
+    ManageBookingView -> ModifyBookingView : display()
+    activate ModifyBookingView
+
+    ModifyBookingView -> AppController : getBookings(customerID?)
+    activate AppController
+    AppController -> BookingService : getBookings(customerID?)
+    activate BookingService
+    BookingService -> BookingRepo : readByCustomer(customerID?)
+    activate BookingRepo
+    BookingRepo --> BookingService : List<Booking>
+    deactivate BookingRepo
+    BookingService --> AppController : List<Booking>
+    deactivate BookingService
+    AppController --> ModifyBookingView : List<Booking>
+    deactivate AppController
+
+    ModifyBookingView -> User : showBookings()
+
+    User -> ModifyBookingView : selects booking to modify
+
+    ModifyBookingView -> ModifyBookingView : displayModificationOptions()
+
+    User -> ModifyBookingView : enters updated info
+
+    alt Flight Change Requested
+        ModifyBookingView -> AppController : searchFlights(newCriteria)
+        activate AppController
+        AppController -> FlightService : searchFlights(newCriteria)
+        activate FlightService
+        FlightService -> FlightRepository : readMatching(newCriteria)
+        activate FlightRepository
+        FlightRepository --> FlightService : List<Flight>
+        deactivate FlightRepository
+        FlightService --> AppController : List<Flight>
+        deactivate FlightService
+        AppController --> ModifyBookingView : List<Flight>
+        deactivate AppController
+
+        ModifyBookingView -> User : displayNewFlightOptions()
+        User -> ModifyBookingView : selects new flight
+    end
+
+    ModifyBookingView -> AppController : updateBooking(id, updatedBooking)
+    activate AppController
+    AppController -> BookingService : updateBooking(id, updatedBooking)
+    activate BookingService
+    BookingService -> BookingRepo : update(id, updatedBooking)
+    activate BookingRepo
+    BookingRepo --> BookingService : void
+    deactivate BookingRepo
+    BookingService --> AppController : void
+    deactivate BookingService
+    AppController --> ModifyBookingView : update success
+    deactivate AppController
+
+    ModifyBookingView --> User : modification successful
+
+    ' Auto-trigger UC7
+    ModifyBookingView -> AppController : generateConfirmation(id)
+end
+
+
+' =====================================================
+' UC7 – Generate Booking Confirmation
+' =====================================================
+group Generate Booking Confirmation (UC7)
+    AppController -> BookingService : getBookingDetails(id)
+    activate BookingService
+    BookingService -> BookingRepo : read(id)
+    activate BookingRepo
+    BookingRepo --> BookingService : Booking
+    deactivate BookingRepo
+    BookingService --> AppController : Booking
+    deactivate BookingService
+
+    AppController -> AppController : build Confirmation\n(PDF/Email)
+
+    AppController -> User : send confirmation message\n(success or delivery error)
+end
+
+@enduml
+

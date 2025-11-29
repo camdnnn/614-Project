@@ -1,0 +1,103 @@
+@startuml PaymentSequenceDiagram
+title Payment Sequence Diagram
+
+actor "Customer / Flight Agent" as User
+participant "BookingView\n<<boundary>>" as BookingView
+participant "PaymentView\n<<boundary>>" as PaymentView
+participant "BookingConfirmationView\n<<boundary>>" as ConfirmationView
+participant "AppController\n<<control>>\n<<Singleton>>" as AppController
+participant "PaymentService\n<<control>>" as PaymentService
+participant "PaymentGateway\n<<external>>" as PaymentGateway
+participant "BookingService\n<<control>>" as BookingService
+participant "PaymentRepository\n<<repository>>" as PaymentRepo
+participant "BookingRepository\n<<repository>>" as BookingRepo
+entity "Payment\n<<entity>>" as Payment
+entity "Booking\n<<entity>>" as Booking
+
+' ===== Navigate to Payment =====
+User -> BookingView : selects booking\nclicks Proceed to Payment
+activate BookingView
+BookingView -> PaymentView : display(bookingId, amount)
+deactivate BookingView
+activate PaymentView
+PaymentView -> PaymentView : displayAmount(amount)
+PaymentView --> User : shows payment form
+
+' ===== Main Flow: Submit Payment =====
+group Submit Payment
+    User -> PaymentView : enter card details\nclick Pay
+    PaymentView -> AppController : processPaymentWithStrategy(bookingId,\namount, cardDetails)
+    activate AppController
+    AppController -> PaymentService : processPayment(bookingId,\namount, method="Card")
+    activate PaymentService
+    PaymentService -> BookingService : getBookingById(bookingId)
+    activate BookingService
+    BookingService -> BookingRepo : read(bookingId)
+    activate BookingRepo
+    BookingRepo --> BookingService : Booking
+    deactivate BookingRepo
+    BookingService --> PaymentService : Booking
+    deactivate BookingService
+
+    alt Booking missing or not payable
+        PaymentService --> AppController : error("Booking not payable")
+        deactivate PaymentService
+        AppController --> PaymentView : showError("Cannot pay for this booking")
+        deactivate AppController
+    else Booking valid
+        PaymentService -> PaymentService : validateCard(cardDetails)
+        alt Invalid card info
+            PaymentService --> AppController : error("Invalid payment details")
+            deactivate PaymentService
+            AppController --> PaymentView : showError("Invalid payment details")
+            deactivate AppController
+        else Details valid
+            PaymentService -> PaymentGateway : authorize(amount,\ncardDetails)
+            activate PaymentGateway
+            alt Gateway declines or times out
+                PaymentGateway --> PaymentService : error("Payment declined")
+                deactivate PaymentGateway
+                PaymentService --> AppController : error("Payment could not be processed")
+                deactivate PaymentService
+                AppController --> PaymentView : showError("Payment failed. Try again.")
+                deactivate AppController
+            else Authorized
+                PaymentGateway --> PaymentService : transactionId
+                deactivate PaymentGateway
+
+                create Payment
+                PaymentService -> Payment : <<create>>
+                PaymentService -> Payment : setTransactionId(transactionId)
+                PaymentService -> PaymentRepo : create(Payment)
+                activate PaymentRepo
+                PaymentRepo --> PaymentService : Payment saved
+                deactivate PaymentRepo
+
+                PaymentService -> BookingRepo : update(bookingId, status="PAID")
+                activate BookingRepo
+                BookingRepo --> PaymentService : void
+                deactivate BookingRepo
+
+                PaymentService --> AppController : Payment
+                deactivate PaymentService
+
+                AppController -> AppController : generateReceipt(bookingId, Payment)
+                AppController --> PaymentView : showSuccess(Payment)
+                AppController --> ConfirmationView : display(Booking, Payment)
+                deactivate AppController
+
+                PaymentView --> User : shows "Payment Successful"\n+ receipt info
+                ConfirmationView --> User : displays booking confirmation
+            end
+        end
+    end
+end
+
+' ===== Alternate: User Cancels =====
+group Cancel Payment
+    User -> PaymentView : clicks Cancel
+    PaymentView -> BookingView : return to booking summary
+    deactivate PaymentView
+end
+
+@enduml

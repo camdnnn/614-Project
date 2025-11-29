@@ -119,13 +119,6 @@ package "Data Layer" {
   UserRepository -> User
 }
 
-  ' TODO: Remove "Password Reset" flow from login.puml activity diagram
-  ' Password reset is not in the project spec requirements
-  ' TODO: Remove "Baggage Selection" from booking_activity.puml activity diagram
-  ' Baggage selection is not in the project spec requirements
-  ' TODO: Update login.puml activity diagram to show Login -> RoleSelection -> Dashboard flow
-  ' instead of automatic role-based redirect after login.
-
 package "Presentation Layer" {
   class LoginView <<boundary>> {
     - usernameField: JTextField

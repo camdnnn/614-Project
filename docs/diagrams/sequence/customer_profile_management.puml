@@ -1,0 +1,181 @@
+@startuml ManageCustomerProfilesSequenceDiagram
+title Manage Customer Profiles Sequence Diagram
+
+' ===============================
+' Actors & Participants
+' ===============================
+actor "Flight Agent" as Agent
+participant "AgentMenuView\n<<boundary>>" as AgentMenu
+participant "CustomerProfileView\n<<boundary>>" as ProfileView
+participant "AppController\n<<control>>\n<<Singleton>>" as AppController
+participant "UserService\n<<control>>" as UserService
+participant "UserRepository\n<<repository>>" as UserRepo
+entity "User\n<<entity>>" as User
+
+' ================================================
+' UC8 – Manage Customer Profile (Navigation + List)
+' ================================================
+Agent -> AgentMenu : clicks "Customer Profile Management"
+activate AgentMenu
+AgentMenu -> ProfileView : display()
+deactivate AgentMenu
+activate ProfileView
+
+' System loads all customers on entry
+ProfileView -> AppController : getAllUsers()
+activate AppController
+AppController -> UserService : getAllUsers()
+activate UserService
+UserService -> UserRepo : readAll()
+activate UserRepo
+UserRepo --> UserService : List<User>
+deactivate UserRepo
+UserService --> AppController : List<User>
+deactivate UserService
+AppController --> ProfileView : List<User>
+deactivate AppController
+
+ProfileView -> ProfileView : displayCustomers(users)
+ProfileView --> Agent : shows all profiles and operations
+
+' ==============================================================
+' ALT FLOW: Agent clicks Back → return to Agent Menu
+' ==============================================================
+group Back to Menu
+    Agent -> ProfileView : clicks Back
+    ProfileView -> AgentMenu : display()
+    deactivate ProfileView
+    activate AgentMenu
+    AgentMenu --> Agent : shows Agent home screen
+    deactivate AgentMenu
+end
+
+' ==============================================================
+' UC9 – Add Customer Profile
+' ==============================================================
+group Add Profile
+    Agent -> ProfileView : clicks "Add Profile"
+    ProfileView --> Agent : displays empty form
+
+    Agent -> ProfileView : enters customer details\nand clicks Create
+
+    ProfileView -> ProfileView : getCustomerName(),\ngetCustomerEmail(), getCustomerPhone(),\ngetCustomerAddress()
+
+    note right of ProfileView
+        Creates new User object
+        from entered customer details
+    end note
+
+    ProfileView -> AppController : createUser(user: User)
+    activate AppController
+
+    AppController -> UserService : createUser(user)
+    activate UserService
+
+    create User
+    UserService -> User : <<create>> new User(...)
+
+    UserService -> UserRepo : create(data: User)
+    activate UserRepo
+    UserRepo --> UserService : void
+    deactivate UserRepo
+
+    UserService --> AppController : void
+    deactivate UserService
+
+    AppController --> ProfileView : confirmation
+    deactivate AppController
+
+    ProfileView --> Agent : shows success message
+
+    ' refresh customer list
+    ProfileView -> AppController : getAllUsers()
+    activate AppController
+    AppController -> UserService : getAllUsers()
+    activate UserService
+    UserService -> UserRepo : readAll()
+    activate UserRepo
+    UserRepo --> UserService : List<User>
+    deactivate UserRepo
+    UserService --> AppController : List<User>
+    deactivate UserService
+    AppController --> ProfileView : List<User>
+    deactivate AppController
+
+    ProfileView -> ProfileView : displayCustomers(users)
+    ProfileView --> Agent : refreshed list shown
+end
+
+' ==============================================================
+' UC10 – View Customer Profile
+' ==============================================================
+group View Profile
+    Agent -> ProfileView : selects profile\nand clicks "View"
+
+    ProfileView -> ProfileView : getSelectedCustomer(): User
+    ProfileView -> ProfileView : displayCustomerDetails(user)
+
+    ProfileView --> Agent : shows complete customer details
+
+    Agent -> ProfileView : clicks Back
+    ProfileView -> ProfileView : displayCustomers(users)
+end
+
+' ==============================================================
+' UC11 – Update Customer Profile
+' ==============================================================
+group Update Profile
+    Agent -> ProfileView : selects profile\nand clicks "Update"
+
+    ProfileView -> ProfileView : getSelectedCustomer(): User
+    ProfileView -> ProfileView : displayCustomerDetails(user)
+    ProfileView --> Agent : shows editable fields
+
+    Agent -> ProfileView : modifies details\nand clicks Update
+
+    ProfileView -> ProfileView : getCustomerName(),\ngetCustomerEmail(), getCustomerPhone(),\ngetCustomerAddress()
+
+    note right of ProfileView
+        Creates updated User object
+        using modified form data
+    end note
+
+    ProfileView -> AppController : updateUser(id, user)
+    activate AppController
+
+    AppController -> UserService : updateUser(id, user)
+    activate UserService
+
+    UserService -> UserRepo : update(id, data: User)
+    activate UserRepo
+    UserRepo --> UserService : void
+    deactivate UserRepo
+
+    UserService --> AppController : void
+    deactivate UserService
+
+    AppController --> ProfileView : confirmation
+    deactivate AppController
+
+    ProfileView -> ProfileView : clearFields()
+    ProfileView --> Agent : shows success message
+
+    ' refresh customer list
+    ProfileView -> AppController : getAllUsers()
+    activate AppController
+    AppController -> UserService : getAllUsers()
+    activate UserService
+    UserService -> UserRepo : readAll()
+    activate UserRepo
+    UserRepo --> UserService : List<User>
+    deactivate UserRepo
+    UserService --> AppController : List<User>
+    deactivate UserService
+    AppController --> ProfileView : List<User>
+    deactivate AppController
+
+    ProfileView -> ProfileView : displayCustomers(users)
+    ProfileView --> Agent : displays updated list
+end
+
+@enduml

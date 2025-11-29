@@ -1,0 +1,82 @@
+614-Project/
+│
+├── lib/
+│   └── mysql-connector-j-8.3.0.jar
+│
+├── src/com/flightreservation/
+│   │
+│   ├── model/                          # SHARED ENTITIES
+│   │   ├── Booking.java
+│   │   ├── Flight.java
+│   │   ├── Payment.java
+│   │   ├── User.java
+│   │   ├── MonthlyNews.java
+│   │   └── Role.java
+│   │
+│   ├── data/                           # DATA LAYER
+│   │   ├── config/
+│   │   │   └── DBConnection.java
+│   │   └── repository/
+│   │       ├── Repository.java         # Interface
+│   │       ├── BookingRepository.java
+│   │       ├── FlightRepository.java
+│   │       ├── PaymentRepository.java
+│   │       ├── UserRepository.java
+│   │       └── MonthlyNewsRepository.java
+│   │
+│   ├── business/                       # BUSINESS LOGIC LAYER
+│   │   ├── controller/
+│   │   │   └── AppController.java      # Singleton
+│   │   └── service/
+│   │       ├── AuthService.java
+│   │       ├── UserService.java
+│   │       ├── FlightService.java
+│   │       ├── BookingService.java
+│   │       ├── PaymentService.java
+│   │       └── NewsService.java
+│   │
+│   ├── presentation/                   # PRESENTATION LAYER
+│   │   └── views/
+│   │       ├── LoginView.java
+│   │       ├── RoleSelectionView.java
+│   │       ├── CustomerMenuView.java
+│   │       ├── AgentMenuView.java
+│   │       ├── AdminMenuView.java
+│   │       ├── FlightSearchView.java
+│   │       ├── FlightResultsView.java
+│   │       ├── FlightManagementView.java
+│   │       ├── BookingView.java
+│   │       ├── BookingConfirmationView.java
+│   │       ├── BookingHistoryView.java
+│   │       ├── PaymentView.java
+│   │       ├── PaymentHistoryView.java
+│   │       ├── CustomerProfileView.java
+│   │       └── MonthlyNewsView.java
+│   │
+│   └── Main.java
+│
+├── resources/
+│   └── db.properties
+│
+├── bin/                                # Compiled classes
+│
+├── data/                               # SQL scripts
+│   ├── schema.sql
+│   └── seed.sql
+│
+└── docs/                               # Documentation
+
+Package Structure:
+- com.flightreservation.model - 6 entity classes
+- com.flightreservation.data.config - DBConnection
+- com.flightreservation.data.repository - Repository interface + 5 repositories
+- com.flightreservation.business.controller - AppController
+- com.flightreservation.business.service - 6 service classes
+- com.flightreservation.presentation.views - 15 view classes
+
+Compile command:
+javac -cp "lib/*" -d bin -sourcepath src src/com/flightreservation/**/*.java
+
+Run command:
+java -cp "bin:lib/*" com.flightreservation.Main
+

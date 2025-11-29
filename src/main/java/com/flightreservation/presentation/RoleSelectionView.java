@@ -1,4 +1,4 @@
-package com.flightreservation.presentation.views;
+package com.flightreservation.presentation;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,41 +1,41 @@
-package com.flightreservation.presentation.views;
+package com.flightreservation.presentation;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class AgentMenuView {
+public class CustomerMenuView {
     private JFrame frame;
-    private JButton manageBookingsButton;
-    private JButton manageCustomersButton;
-    private JButton viewFlightsButton;
+    private JButton searchFlightsButton;
+    private JButton viewBookingsButton;
     private JButton viewPaymentsButton;
+    private JButton viewNewsButton;
     private JButton logoutButton;
 
-    public AgentMenuView() {
+    public CustomerMenuView() {
         initializeComponents();
         layoutComponents();
     }
 
     private void initializeComponents() {
-        frame = new JFrame("Flight Agent Menu");
+        frame = new JFrame("Customer Menu");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
 
-        manageBookingsButton = new JButton("Manage Bookings");
-        manageCustomersButton = new JButton("Manage Customers");
-        viewFlightsButton = new JButton("View Flights");
+        searchFlightsButton = new JButton("Search Flights");
+        viewBookingsButton = new JButton("View Bookings");
         viewPaymentsButton = new JButton("View Payments");
+        viewNewsButton = new JButton("View Monthly News");
         logoutButton = new JButton("Logout");
 
         // Set button sizes
         Dimension buttonSize = new Dimension(250, 50);
-        manageBookingsButton.setPreferredSize(buttonSize);
-        manageCustomersButton.setPreferredSize(buttonSize);
-        viewFlightsButton.setPreferredSize(buttonSize);
+        searchFlightsButton.setPreferredSize(buttonSize);
+        viewBookingsButton.setPreferredSize(buttonSize);
         viewPaymentsButton.setPreferredSize(buttonSize);
+        viewNewsButton.setPreferredSize(buttonSize);
         logoutButton.setPreferredSize(new Dimension(250, 40));
     }
 
@@ -44,7 +44,7 @@ public class AgentMenuView {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Title
-        JLabel titleLabel = new JLabel("Flight Agent Menu");
+        JLabel titleLabel = new JLabel("Customer Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(titleLabel, BorderLayout.NORTH);
@@ -57,16 +57,16 @@ public class AgentMenuView {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        buttonPanel.add(manageBookingsButton, gbc);
+        buttonPanel.add(searchFlightsButton, gbc);
 
         gbc.gridy = 1;
-        buttonPanel.add(manageCustomersButton, gbc);
+        buttonPanel.add(viewBookingsButton, gbc);
 
         gbc.gridy = 2;
-        buttonPanel.add(viewFlightsButton, gbc);
+        buttonPanel.add(viewPaymentsButton, gbc);
 
         gbc.gridy = 3;
-        buttonPanel.add(viewPaymentsButton, gbc);
+        buttonPanel.add(viewNewsButton, gbc);
 
         gbc.gridy = 4;
         gbc.insets = new Insets(30, 10, 10, 10);
@@ -85,20 +85,20 @@ public class AgentMenuView {
         frame.dispose();
     }
 
-    public void addManageBookingsListener(ActionListener listener) {
-        manageBookingsButton.addActionListener(listener);
+    public void addSearchFlightsListener(ActionListener listener) {
+        searchFlightsButton.addActionListener(listener);
     }
 
-    public void addManageCustomersListener(ActionListener listener) {
-        manageCustomersButton.addActionListener(listener);
-    }
-
-    public void addViewFlightsListener(ActionListener listener) {
-        viewFlightsButton.addActionListener(listener);
+    public void addViewBookingsListener(ActionListener listener) {
+        viewBookingsButton.addActionListener(listener);
     }
 
     public void addViewPaymentsListener(ActionListener listener) {
         viewPaymentsButton.addActionListener(listener);
+    }
+
+    public void addViewNewsListener(ActionListener listener) {
+        viewNewsButton.addActionListener(listener);
     }
 
     public void addLogoutListener(ActionListener listener) {

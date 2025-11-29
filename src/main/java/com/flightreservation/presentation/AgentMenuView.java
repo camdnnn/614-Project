@@ -1,35 +1,41 @@
-package com.flightreservation.presentation.views;
+package com.flightreservation.presentation;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class AdminMenuView {
+public class AgentMenuView {
     private JFrame frame;
-    private JButton manageFlightsButton;
+    private JButton manageBookingsButton;
+    private JButton manageCustomersButton;
     private JButton viewFlightsButton;
+    private JButton viewPaymentsButton;
     private JButton logoutButton;
 
-    public AdminMenuView() {
+    public AgentMenuView() {
         initializeComponents();
         layoutComponents();
     }
 
     private void initializeComponents() {
-        frame = new JFrame("System Administrator Menu");
+        frame = new JFrame("Flight Agent Menu");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(400, 400);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
 
-        manageFlightsButton = new JButton("Manage Flights");
+        manageBookingsButton = new JButton("Manage Bookings");
+        manageCustomersButton = new JButton("Manage Customers");
         viewFlightsButton = new JButton("View Flights");
+        viewPaymentsButton = new JButton("View Payments");
         logoutButton = new JButton("Logout");
 
         // Set button sizes
         Dimension buttonSize = new Dimension(250, 50);
-        manageFlightsButton.setPreferredSize(buttonSize);
+        manageBookingsButton.setPreferredSize(buttonSize);
+        manageCustomersButton.setPreferredSize(buttonSize);
         viewFlightsButton.setPreferredSize(buttonSize);
+        viewPaymentsButton.setPreferredSize(buttonSize);
         logoutButton.setPreferredSize(new Dimension(250, 40));
     }
 
@@ -38,7 +44,7 @@ public class AdminMenuView {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Title
-        JLabel titleLabel = new JLabel("System Administrator Menu");
+        JLabel titleLabel = new JLabel("Flight Agent Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(titleLabel, BorderLayout.NORTH);
@@ -51,12 +57,18 @@ public class AdminMenuView {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        buttonPanel.add(manageFlightsButton, gbc);
+        buttonPanel.add(manageBookingsButton, gbc);
 
         gbc.gridy = 1;
-        buttonPanel.add(viewFlightsButton, gbc);
+        buttonPanel.add(manageCustomersButton, gbc);
 
         gbc.gridy = 2;
+        buttonPanel.add(viewFlightsButton, gbc);
+
+        gbc.gridy = 3;
+        buttonPanel.add(viewPaymentsButton, gbc);
+
+        gbc.gridy = 4;
         gbc.insets = new Insets(30, 10, 10, 10);
         buttonPanel.add(logoutButton, gbc);
 
@@ -73,12 +85,20 @@ public class AdminMenuView {
         frame.dispose();
     }
 
-    public void addManageFlightsListener(ActionListener listener) {
-        manageFlightsButton.addActionListener(listener);
+    public void addManageBookingsListener(ActionListener listener) {
+        manageBookingsButton.addActionListener(listener);
+    }
+
+    public void addManageCustomersListener(ActionListener listener) {
+        manageCustomersButton.addActionListener(listener);
     }
 
     public void addViewFlightsListener(ActionListener listener) {
         viewFlightsButton.addActionListener(listener);
+    }
+
+    public void addViewPaymentsListener(ActionListener listener) {
+        viewPaymentsButton.addActionListener(listener);
     }
 
     public void addLogoutListener(ActionListener listener) {

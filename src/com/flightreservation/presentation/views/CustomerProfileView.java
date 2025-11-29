@@ -2,7 +2,6 @@ package com.flightreservation.presentation.views;
 
 import com.flightreservation.model.*;
 
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -10,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class CustomerProfileView {
+
     private JFrame frame;
     private JTextField searchField;
     private JButton searchButton;
@@ -32,7 +32,7 @@ public class CustomerProfileView {
     private void initializeComponents() {
         frame = new JFrame("Customer Profile Management");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(1000, 600);
+        frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
 
         // Search components
@@ -50,7 +50,7 @@ public class CustomerProfileView {
         customersTable = new JTable(tableModel);
         customersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         customersTable.setRowHeight(25);
-        
+
         // Add selection listener to populate form fields
         customersTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -59,10 +59,10 @@ public class CustomerProfileView {
         });
 
         // Form fields
-        nameField = new JTextField(25);
-        emailField = new JTextField(25);
-        phoneField = new JTextField(25);
-        addressField = new JTextField(25);
+        nameField = new JTextField(20);
+        emailField = new JTextField(20);
+        phoneField = new JTextField(20);
+        addressField = new JTextField(20);
 
         // Buttons
         addButton = new JButton("Add");
@@ -75,32 +75,35 @@ public class CustomerProfileView {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Title
+        // Top panel with title and search
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+
         JLabel titleLabel = new JLabel("Customer Profile Management");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        topPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Search panel
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         searchPanel.add(new JLabel("Search:"));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
-        mainPanel.add(searchPanel, BorderLayout.NORTH);
+        topPanel.add(searchPanel, BorderLayout.SOUTH);
 
-        // Split pane for table and form
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(300);
-        splitPane.setResizeWeight(0.5);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+
+        // Center panel with table and form side by side
+        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
 
         // Table panel
         JScrollPane tableScrollPane = new JScrollPane(customersTable);
-        splitPane.setTopComponent(tableScrollPane);
+        tableScrollPane.setPreferredSize(new Dimension(400, 300));
+        centerPanel.add(tableScrollPane, BorderLayout.CENTER);
 
-        // Form panel
+        // Form panel on the right
         JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createTitledBorder("Customer Details"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
         // Name
@@ -131,9 +134,9 @@ public class CustomerProfileView {
         gbc.gridx = 1;
         formPanel.add(addressField, gbc);
 
-        splitPane.setBottomComponent(formPanel);
+        centerPanel.add(formPanel, BorderLayout.EAST);
 
-        mainPanel.add(splitPane, BorderLayout.CENTER);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -166,18 +169,18 @@ public class CustomerProfileView {
 
     public void displayCustomers(List<User> customers) {
         tableModel.setRowCount(0);
-        
+
         if (customers == null || customers.isEmpty()) {
             return;
         }
-        
+
         for (User customer : customers) {
             Object[] row = {
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
-                "", // Phone - not in User model, would need to extend
-                "", // Address - not in User model, would need to extend
+                "",
+                "",
                 customer.getRole().toString()
             };
             tableModel.addRow(row);
@@ -187,8 +190,8 @@ public class CustomerProfileView {
     public void displayCustomerDetails(User customer) {
         nameField.setText(customer.getName());
         emailField.setText(customer.getEmail());
-        phoneField.setText(""); // Would need to extend User model
-        addressField.setText(""); // Would need to extend User model
+        phoneField.setText("");
+        addressField.setText("");
     }
 
     public String getSearchQuery() {
@@ -216,16 +219,16 @@ public class CustomerProfileView {
         if (selectedRow == -1) {
             return null;
         }
-        
+
         int id = (Integer) tableModel.getValueAt(selectedRow, 0);
         String name = (String) tableModel.getValueAt(selectedRow, 1);
         String email = (String) tableModel.getValueAt(selectedRow, 2);
-        
+
         User user = new User();
         user.setId(id);
         user.setName(name);
         user.setEmail(email);
-        
+
         return user;
     }
 
@@ -262,4 +265,3 @@ public class CustomerProfileView {
         return frame;
     }
 }
-

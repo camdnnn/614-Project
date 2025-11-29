@@ -9,19 +9,6 @@ start
 
 repeat
   |User|
-  while (Choose Action?) is (Reset Password)
-    :Click "Reset Password";
-    |System|
-    :Display Reset Password Screen;
-    |User|
-    :Enter Email and New Password;
-    :Confirm Reset;
-    |System|
-    :Update Password;
-    :Display "Password Reset Successful";
-  endwhile (Login)
-
-  |User|
   :Enter Email and Password;
   :Click "Login";
 
@@ -31,8 +18,11 @@ repeat
   backward:Display "Invalid Credentials" Message;
   repeat while (Valid Credentials?) is (no)
   ->yes;
-  :Identify User Role;
 
+  |User|
+  :Provide User Role;
+
+  |System|
   switch(User Role?)
   case (Admin)
     :Redirect to Admin Dashboard;

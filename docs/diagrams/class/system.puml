@@ -1,0 +1,581 @@
+@startuml SystemClassDiagram
+
+skinparam classAttributeIconSize 0
+hide circle
+skinparam class {
+    FontStyle bold
+}
+
+' Note: Getters/setters and constructors are omitted from entity classes as per project spec:
+' "You don't need to show constructors/destructor, getters/setters."
+package "Data Layer" {
+  interface "Repository<T>" as Repository <<repository>> {
+    + create(data: T): void
+    + read(id: number): T
+    + update(id: number, data: T): void
+    + delete(id: number): void
+    + readAll(): List<T>
+  }
+
+  class Booking <<entity>> {
+    - id: number 
+    - customerId: number
+    - flightId: number
+    - seatNumber: string
+    - date: Date
+    - status: string
+  }
+
+  class BookingRepository <<repository>> {
+    + create(data: Booking): void
+    + read(id: number): Booking
+    + update(id: number, data: Booking): void
+    + delete(id: number): void
+    + readAll(): List<Booking>
+  }
+
+  class Flight <<entity>> {
+    - id: number
+    - airline: string
+    - origin: string
+    - destination: string
+    - departure: Date
+    - arrival: Date
+    - price: float
+    - availableSeats: number
+  }
+
+  class FlightRepository <<repository>> {
+    + create(data: Flight): void
+    + read(id: number): Flight
+    + update(id: number, data: Flight): void
+    + delete(id: number): void
+    + readAll(): List<Flight>
+  }
+
+  class Payment <<entity>> {
+    - id: number
+    - customerId: number
+    - bookingId: number
+    - amount: float
+    - date: Date
+    - method: string
+  }
+
+  class PaymentRepository <<repository>> {
+    + create(data: Payment): void
+    + read(id: number): Payment
+    + update(id: number, data: Payment): void
+    + delete(id: number): void
+    + readAll(): List<Payment>
+  }
+
+  enum Role {
+    CUSTOMER
+    FLIGHT_AGENT
+    ADMIN
+  }
+
+  class User <<entity>> {
+    - id: number
+    - name: string
+    - email: string
+    - password: string
+    - role: Role
+  }
+
+  class UserRepository <<repository>> {
+    + create(data: User): void
+    + read(id: number): User
+    + update(id: number, data: User): void
+    + delete(id: number): void
+    + readAll(): List<User>
+  }
+
+  class MonthlyNews <<entity>> {
+    - id: number
+    - title: string
+    - content: string
+    - date: Date
+  }
+
+  class MonthlyNewsRepository <<repository>> {
+    + create(data: MonthlyNews): void
+    + read(id: number): MonthlyNews
+    + update(id: number, data: MonthlyNews): void
+    + delete(id: number): void
+    + readAll(): List<MonthlyNews>
+  }
+
+  MonthlyNewsRepository ..|> Repository
+  MonthlyNewsRepository -> MonthlyNews
+  BookingRepository ..|> Repository
+  BookingRepository -> Booking
+  FlightRepository ..|> Repository
+  FlightRepository -> Flight
+  PaymentRepository ..|> Repository
+  PaymentRepository -> Payment 
+  UserRepository ..|> Repository
+  UserRepository -> User
+}
+
+package "Presentation Layer" {
+  class LoginView <<boundary>> {
+    - usernameField: JTextField
+    - passwordField: JPasswordField
+    - loginButton: JButton
+    - errorLabel: JLabel
+    - frame: JFrame
+    + display(): void
+    + getUsername(): String
+    + getPassword(): String
+    + showError(message: String): void
+    + clearFields(): void
+    + addLoginListener(listener: ActionListener): void
+  }
+
+  ' As per Marking Sheet for Project Implementation screenshot:
+  ' "Your GUI should start with options of running the program as Customer, Agent or Admin."
+  class RoleSelectionView <<boundary>> {
+    - frame: JFrame
+    - titleLabel: JLabel
+    - customerButton: JButton
+    - agentButton: JButton
+    - adminButton: JButton
+    - backButton: JButton
+    + display(): void
+    + addCustomerListener(listener: ActionListener): void
+    + addAgentListener(listener: ActionListener): void
+    + addAdminListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  ' Design Decision: Using separate menu views per role instead of a single MainMenuView
+  ' with role-based conditional logic. This approach keeps each view simple (single responsibility),
+  ' avoids putting business logic in the view layer, and provides clearer traceability
+  ' from use cases to specific UI components. The minor code duplication is acceptable
+  ' for better separation of concerns and cleaner architecture documentation.
+  class CustomerMenuView <<boundary>> {
+    - frame: JFrame
+    - searchFlightsButton: JButton
+    - viewBookingsButton: JButton
+    - viewPaymentsButton: JButton
+    - viewNewsButton: JButton
+    - logoutButton: JButton
+    + display(): void
+    + addSearchFlightsListener(listener: ActionListener): void
+    + addViewBookingsListener(listener: ActionListener): void
+    + addViewPaymentsListener(listener: ActionListener): void
+    + addViewNewsListener(listener: ActionListener): void
+    + addLogoutListener(listener: ActionListener): void
+  }
+
+  class AgentMenuView <<boundary>> {
+    - frame: JFrame
+    - manageBookingsButton: JButton
+    - manageCustomersButton: JButton
+    - viewFlightsButton: JButton
+    - viewPaymentsButton: JButton
+    - logoutButton: JButton
+    + display(): void
+    + addManageBookingsListener(listener: ActionListener): void
+    + addManageCustomersListener(listener: ActionListener): void
+    + addViewFlightsListener(listener: ActionListener): void
+    + addViewPaymentsListener(listener: ActionListener): void
+    + addLogoutListener(listener: ActionListener): void
+  }
+
+  class AdminMenuView <<boundary>> {
+    - frame: JFrame
+    - manageFlightsButton: JButton
+    - viewFlightsButton: JButton
+    - logoutButton: JButton
+    + display(): void
+    + addManageFlightsListener(listener: ActionListener): void
+    + addViewFlightsListener(listener: ActionListener): void
+    + addLogoutListener(listener: ActionListener): void
+  }
+
+  class FlightSearchView <<boundary>> {
+    - frame: JFrame
+    - originField: JTextField
+    - destinationField: JTextField
+    - departureDateField: JTextField
+    - airlineComboBox: JComboBox
+    - searchButton: JButton
+    - clearButton: JButton
+    - backButton: JButton
+    + display(): void
+    + getOrigin(): String
+    + getDestination(): String
+    + getDepartureDate(): String
+    + getSelectedAirline(): String
+    + clearFields(): void
+    + addSearchListener(listener: ActionListener): void
+    + addClearListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class FlightResultsView <<boundary>> {
+    - frame: JFrame
+    - flightsTable: JTable
+    - tableModel: DefaultTableModel
+    - selectButton: JButton
+    - backButton: JButton
+    - noResultsLabel: JLabel
+    + display(): void
+    + displayFlights(flights: List<Flight>): void
+    + getSelectedFlight(): Flight
+    + showNoResults(): void
+    + addSelectListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class BookingView <<boundary>> {
+    - frame: JFrame
+    - flightDetailsPanel: JPanel
+    - seatComboBox: JComboBox
+    - passengerNameField: JTextField
+    - passengerEmailField: JTextField
+    - bookButton: JButton
+    - cancelButton: JButton
+    - modifyButton: JButton
+    - backButton: JButton
+    + display(): void
+    + displayFlightDetails(flight: Flight): void
+    + displayBookingDetails(booking: Booking): void
+    + getSeatSelection(): String
+    + getPassengerName(): String
+    + getPassengerEmail(): String
+    + addBookListener(listener: ActionListener): void
+    + addCancelListener(listener: ActionListener): void
+    + addModifyListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class BookingConfirmationView <<boundary>> {
+    - frame: JFrame
+    - confirmationPanel: JPanel
+    - confirmationNumberLabel: JLabel
+    - flightInfoLabel: JLabel
+    - passengerInfoLabel: JLabel
+    - seatInfoLabel: JLabel
+    - statusLabel: JLabel
+    - printButton: JButton
+    - doneButton: JButton
+    + display(): void
+    + displayConfirmation(booking: Booking, flight: Flight): void
+    + setConfirmationNumber(number: String): void
+    + addPrintListener(listener: ActionListener): void
+    + addDoneListener(listener: ActionListener): void
+  }
+
+  ' Controller logic determines which bookings to display:
+  ' - Customer: shows only their own bookings (filtered by customerId)
+  ' - Agent: shows all customer bookings (no filter)
+  class BookingHistoryView <<boundary>> {
+    - frame: JFrame
+    - bookingsTable: JTable
+    - tableModel: DefaultTableModel
+    - viewDetailsButton: JButton
+    - cancelBookingButton: JButton
+    - modifyBookingButton: JButton
+    - backButton: JButton
+    + display(): void
+    + displayBookings(bookings: List<Booking>): void
+    + getSelectedBooking(): Booking
+    + refreshTable(): void
+    + addViewDetailsListener(listener: ActionListener): void
+    + addCancelBookingListener(listener: ActionListener): void
+    + addModifyBookingListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class PaymentView <<boundary>> {
+    - frame: JFrame
+    - amountLabel: JLabel
+    - cardNumberField: JTextField
+    - cardHolderField: JTextField
+    - expiryDateField: JTextField
+    - cvvField: JPasswordField
+    - payButton: JButton
+    - cancelButton: JButton
+    - statusLabel: JLabel
+    + display(): void
+    + displayAmount(amount: float): void
+    + getCardNumber(): String
+    + getCardHolder(): String
+    + getExpiryDate(): String
+    + getCvv(): String
+    + showSuccess(): void
+    + showError(message: String): void
+    + clearFields(): void
+    + addPayListener(listener: ActionListener): void
+    + addCancelListener(listener: ActionListener): void
+  }
+
+  ' Controller logic determines which payments to display:
+  ' - Customer: shows only their own payment history (filtered by customerId)
+  ' - Agent: shows all customer payment history (no filter)
+  class PaymentHistoryView <<boundary>> {
+    - frame: JFrame
+    - paymentsTable: JTable
+    - tableModel: DefaultTableModel
+    - viewDetailsButton: JButton
+    - backButton: JButton
+    + display(): void
+    + displayPayments(payments: List<Payment>): void
+    + getSelectedPayment(): Payment
+    + addViewDetailsListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class CustomerProfileView <<boundary>> {
+    - frame: JFrame
+    - searchField: JTextField
+    - searchButton: JButton
+    - customersTable: JTable
+    - tableModel: DefaultTableModel
+    - nameField: JTextField
+    - emailField: JTextField
+    - phoneField: JTextField
+    - addressField: JTextField
+    - addButton: JButton
+    - updateButton: JButton
+    - clearButton: JButton
+    - backButton: JButton
+    + display(): void
+    + displayCustomers(customers: List<User>): void
+    + displayCustomerDetails(customer: User): void
+    + getSearchQuery(): String
+    + getCustomerName(): String
+    + getCustomerEmail(): String
+    + getCustomerPhone(): String
+    + getCustomerAddress(): String
+    + getSelectedCustomer(): User
+    + clearFields(): void
+    + addSearchListener(listener: ActionListener): void
+    + addAddListener(listener: ActionListener): void
+    + addUpdateListener(listener: ActionListener): void
+    + addClearListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class FlightManagementView <<boundary>> {
+    - frame: JFrame
+    - flightsTable: JTable
+    - tableModel: DefaultTableModel
+    - flightIdField: JTextField
+    - originField: JTextField
+    - destinationField: JTextField
+    - departureDateField: JTextField
+    - arrivalDateField: JTextField
+    - priceField: JTextField
+    - seatsField: JTextField
+    - addButton: JButton
+    - updateButton: JButton
+    - removeButton: JButton
+    - clearButton: JButton
+    - backButton: JButton
+    + display(): void
+    + displayFlights(flights: List<Flight>): void
+    + getFlightId(): String
+    + getOrigin(): String
+    + getDestination(): String
+    + getDepartureDate(): String
+    + getArrivalDate(): String
+    + getPrice(): String
+    + getSeats(): String
+    + getSelectedFlight(): Flight
+    + clearFields(): void
+    + addAddListener(listener: ActionListener): void
+    + addUpdateListener(listener: ActionListener): void
+    + addRemoveListener(listener: ActionListener): void
+    + addClearListener(listener: ActionListener): void
+    + addBackListener(listener: ActionListener): void
+  }
+
+  class MonthlyNewsView <<boundary>> {
+    - frame: JFrame
+    - newsPanel: JPanel
+    - newsContentArea: JTextArea
+    - titleLabel: JLabel
+    - dateLabel: JLabel
+    - backButton: JButton
+    - refreshButton: JButton
+    + display(): void
+    + displayNews(news: MonthlyNews): void
+    + clearNews(): void
+    + addBackListener(listener: ActionListener): void
+    + addRefreshListener(listener: ActionListener): void
+  }
+
+  ' Navigation relationships
+  LoginView --> RoleSelectionView : navigates to
+  RoleSelectionView --> CustomerMenuView : selects Customer
+  RoleSelectionView --> AgentMenuView : selects Agent
+  RoleSelectionView --> AdminMenuView : selects Admin
+
+  ' Customer flow
+  CustomerMenuView --> FlightSearchView : navigates to
+  CustomerMenuView --> BookingHistoryView : navigates to
+  CustomerMenuView --> PaymentHistoryView : navigates to
+  CustomerMenuView --> MonthlyNewsView : navigates to
+  FlightSearchView --> FlightResultsView : navigates to
+  FlightResultsView --> BookingView : navigates to
+  BookingView --> PaymentView : navigates to
+  PaymentView --> BookingConfirmationView : navigates to
+  BookingHistoryView --> BookingView : navigates to
+
+  ' Agent flow
+  AgentMenuView --> BookingHistoryView : navigates to
+  AgentMenuView --> CustomerProfileView : navigates to
+  AgentMenuView --> FlightResultsView : navigates to
+  AgentMenuView --> PaymentHistoryView : navigates to
+
+  ' Admin flow
+  AdminMenuView --> FlightManagementView : navigates to
+  AdminMenuView --> FlightResultsView : navigates to
+}
+
+package "Business Logic Layer" {
+
+  ' AppController centralizes interactions from Presentation -> BLL
+  class AppController <<Singleton>> {
+    - authService: AuthService
+    - userService: UserService
+    - flightService: FlightService
+    - bookingService: BookingService
+    - paymentService: PaymentService
+    - newsService: NewsService
+    + login(username: String, password: String): User
+    + logout(userId: number): void
+    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
+    + createBooking(customerId: number, flightId: number, seat: String): Booking
+    + processPaymentWithStrategy(bookingId: number, amount: float, strategy: PaymentStrategy): Payment
+    + getMonthlyNews(): MonthlyNews
+    + refreshNews(): void
+    + getBookingsForCustomer(customerId: number): List<Booking>
+    + createUser(user: User): void
+    + updateUser(id: number, user: User): void
+    + addViewSubscriber(view: Object): void
+    + getAllFlights(): List<Flight>
+    + addFlight(flight: Flight): void
+    + updateFlight(id: number, flight: Flight): void
+    + removeFlight(id: number): void
+  }
+
+  ' -----------------------------
+  ' Authentication / User Logic
+  ' -----------------------------
+  class AuthService <<control>> {
+    + login(email: String, password: String): User
+    + logout(userId: number): void
+    + verifyRole(user: User, requiredRole: Role): boolean
+  }
+
+  class UserService <<control>> {
+    - userRepository: UserRepository
+    + getUserById(id: number): User
+    + getAllUsers(): List<User>
+    + searchUsers(query: String): List<User>
+    + createUser(user: User): void
+    + updateUser(id: number, user: User): void
+  }
+
+
+  ' -----------------------------
+  ' Flight Logic
+  ' -----------------------------
+  class FlightService <<control>> {
+    - flightRepository: FlightRepository
+    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
+    + getFlightById(id: number): Flight
+    + getAllFlights(): List<Flight>
+    + addFlight(flight: Flight): void
+    + updateFlight(id: number, flight: Flight): void
+    + removeFlight(id: number): void
+    + hasAvailableSeats(flightId: number): boolean
+  }
+
+
+  ' -----------------------------
+  ' Booking Logic
+  ' -----------------------------
+  class BookingService <<control>> {
+    - bookingRepository: BookingRepository
+    - flightService: FlightService
+    + createBooking(customerId: number, flightId: number, seat: String): Booking
+    + cancelBooking(id: number): void
+    + updateBooking(id: number, seat: String): void
+    + getBookingById(id: number): Booking
+    + getAllBookings(): List<Booking>
+    + getBookingsForCustomer(customerId: number): List<Booking>
+  }
+
+
+  ' -----------------------------
+  ' Payment Logic
+  ' -----------------------------
+  class PaymentService <<control>> {
+    - paymentRepository: PaymentRepository
+    - bookingService: BookingService
+    + processPayment(bookingId: number, amount: float, method: String): Payment
+    + getPaymentsForCustomer(customerId: number): List<Payment>
+    + getAllPayments(): List<Payment>
+  }
+
+
+  ' -----------------------------
+  ' News Logic (Static Content)
+  ' -----------------------------
+  class NewsService <<control>> {
+    + getMonthlyNews(): MonthlyNews
+    + refreshNews(): void
+  }
+
+  ' -----------------------------
+  ' Dependencies (BLL → Data Layer)
+  ' -----------------------------
+  AuthService --> UserRepository : queries
+  UserService --> UserRepository : queries
+
+  FlightService --> FlightRepository : queries
+
+  BookingService --> BookingRepository : queries
+  BookingService --> FlightService : calls to
+
+  PaymentService --> PaymentRepository : queries
+  PaymentService --> BookingService : calls to
+
+  NewsService --> MonthlyNewsRepository : queries
+
+  ' -----------------------------
+  ' App Controller Dependencies
+  ' -----------------------------
+  AppController *-- AuthService
+  AppController *-- UserService
+  AppController *-- FlightService
+  AppController *-- BookingService
+  AppController *-- PaymentService
+  AppController *-- NewsService
+
+  LoginView --> AppController : calls to
+  RoleSelectionView --> AppController : calls to
+  CustomerMenuView --> AppController : calls to
+  AgentMenuView --> AppController : calls to
+  AdminMenuView --> AppController : calls to
+  MonthlyNewsView --> AppController : calls to
+  BookingHistoryView --> AppController : calls to
+  FlightSearchView --> AppController : calls to
+  PaymentHistoryView --> AppController : calls to
+  FlightResultsView --> AppController : calls to
+  CustomerProfileView --> AppController : calls to
+  FlightManagementView --> AppController : calls to
+  BookingView --> AppController : calls to
+  BookingConfirmationView --> AppController : calls to
+  PaymentView --> AppController : calls to
+  
+}
+
+@enduml

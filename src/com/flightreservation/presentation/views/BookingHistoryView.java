@@ -1,6 +1,7 @@
-package com.flightreservation.presentation;
+package com.flightreservation.presentation.views;
 
-import com.flightreservation.model.Booking;
+import com.flightreservation.model.*;
+
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

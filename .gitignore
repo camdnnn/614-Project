@@ -1,3 +1,6 @@
 .DS_Store
 ~$*
 ~*.tmp
+
+# Ignore database properties file
+db.properties

@@ -31,7 +31,7 @@ public class Payment {
         return bookingId;
     }
 
-    public double getAmount() {
+    public float getAmount() {
         return amount;
     }
 

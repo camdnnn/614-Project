@@ -1,7 +1,4 @@
-// package main.java.repositories;
 
-// import main.config.DBConnection;
-// import main.java.models.Payment;
 package com.flightreservation.data.repository;
 
 import com.flightreservation.data.config.DBConnection;
@@ -21,7 +18,7 @@ public class PaymentRepository extends Repository<Payment> {
 
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getBookingId());
-            stmt.setFloat(3, (float) data.getAmount());
+            stmt.setFloat(3, data.getAmount());
             stmt.setDate(4, new Date(data.getPaymentDate().getTime()));
             stmt.setString(5, data.getMethod());
 
@@ -61,7 +58,7 @@ public class PaymentRepository extends Repository<Payment> {
 
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getBookingId());
-            stmt.setFloat(3, (float) data.getAmount());
+            stmt.setFloat(3, data.getAmount());
             stmt.setDate(4, new Date(data.getPaymentDate().getTime()));
             stmt.setString(5, data.getMethod());
             stmt.setInt(6, id);
@@ -118,4 +115,5 @@ public class PaymentRepository extends Repository<Payment> {
         );
         return p;
     }
+    
 }

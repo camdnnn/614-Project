@@ -109,4 +109,5 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
         );
         return news;
     }
+    
 }

@@ -46,7 +46,7 @@ public final class AppController {
 
     public static AppController getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("Controller not nitialized");
+            throw new IllegalStateException("Controller not Initialized");
         }
         return instance;
     }

@@ -15,6 +15,7 @@ package "Data Layer" {
     + update(id: number, data: T): void
     + delete(id: number): void
     + readAll(): List<T>
+    # mapRow(rs: ResultSet): T
   }
 
   class Booking <<entity>> {
@@ -32,6 +33,7 @@ package "Data Layer" {
     + update(id: number, data: Booking): void
     + delete(id: number): void
     + readAll(): List<Booking>
+    # mapRow(rs: ResultSet): Booking
   }
 
   class Flight <<entity>> {
@@ -51,6 +53,7 @@ package "Data Layer" {
     + update(id: number, data: Flight): void
     + delete(id: number): void
     + readAll(): List<Flight>
+    # mapRow(rs: ResultSet): Flight
   }
 
   class Payment <<entity>> {
@@ -68,6 +71,7 @@ package "Data Layer" {
     + update(id: number, data: Payment): void
     + delete(id: number): void
     + readAll(): List<Payment>
+    # mapRow(rs: ResultSet): Payment
   }
 
   enum Role {
@@ -90,6 +94,7 @@ package "Data Layer" {
     + update(id: number, data: User): void
     + delete(id: number): void
     + readAll(): List<User>
+    # mapRow(rs: ResultSet): User
   }
 
   class MonthlyNews <<entity>> {
@@ -105,6 +110,7 @@ package "Data Layer" {
     + update(id: number, data: MonthlyNews): void
     + delete(id: number): void
     + readAll(): List<MonthlyNews>
+    # mapRow(rs: ResultSet): MonthlyNews
   }
 
   MonthlyNewsRepository ..|> Repository

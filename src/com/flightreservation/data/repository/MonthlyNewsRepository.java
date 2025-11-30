@@ -18,7 +18,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
             stmt.setInt(1, data.getId());
             stmt.setString(2, data.getTitle());
             stmt.setString(3, data.getContent());
-            stmt.setString(4, data.getPublishDate());
+            stmt.setDate(4, new Date(data.getPublishDate().getTime()));
 
             stmt.executeUpdate();
 
@@ -56,7 +56,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
 
             stmt.setString(1, data.getTitle());
             stmt.setString(2, data.getContent());
-            stmt.setString(3, data.getPublishDate());
+            stmt.setDate(3, new Date(data.getPublishDate().getTime()));
             stmt.setInt(4, id);
 
             stmt.executeUpdate();
@@ -105,7 +105,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
             rs.getInt("id"), 
             rs.getString("title"),
             rs.getString("content"), 
-            rs.getString("publish_date")
+            rs.getDate("publish_date")
         );
         return news;
     }

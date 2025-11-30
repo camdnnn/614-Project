@@ -1,16 +1,18 @@
 package com.flightreservation.model;
 
+import java.util.Date;
+
 public class Flight {
     private int id;
     private String airline;
     private String origin;
     private String destination;
-    private String departure;
-    private String arrival;
+    private Date departure;
+    private Date arrival;
     private float price;
     private int availableSeats;
 
-    public Flight(int id, String airline, String origin, String destination, String departure, String arrival, float price, int availableSeats) {
+    public Flight(int id, String airline, String origin, String destination, Date departure, Date arrival, float price, int availableSeats) {
         this.id = id;
         this.airline = airline;
         this.origin = origin;
@@ -37,11 +39,11 @@ public class Flight {
         return destination;
     }
 
-    public String getDeparture() {
+    public Date getDeparture() {
         return departure;
     }
 
-    public String getArrival() {
+    public Date getArrival() {
         return arrival;
     }
 

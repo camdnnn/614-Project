@@ -19,8 +19,8 @@ public class FlightRepository extends Repository<Flight> {
             stmt.setString(2, data.getAirline());
             stmt.setString(3, data.getOrigin());
             stmt.setString(4, data.getDestination());
-            stmt.setString(5, data.getDeparture());
-            stmt.setString(6, data.getArrival());
+            stmt.setDate(5, new Date(data.getDeparture().getTime()));
+            stmt.setDate(6, new Date(data.getArrival().getTime()));
             stmt.setDouble(7, data.getPrice());
             stmt.setInt(8, data.getAvailableSeats());
 
@@ -60,8 +60,8 @@ public class FlightRepository extends Repository<Flight> {
             stmt.setString(1, data.getAirline());
             stmt.setString(2, data.getOrigin());
             stmt.setString(3, data.getDestination());
-            stmt.setString(4, data.getDeparture());
-            stmt.setString(5, data.getArrival());
+            stmt.setDate(4, new Date(data.getDeparture().getTime()));
+            stmt.setDate(5, new Date(data.getArrival().getTime()));
             stmt.setDouble(6, data.getPrice());
             stmt.setInt(7, data.getAvailableSeats());
             stmt.setInt(8, id);
@@ -113,8 +113,8 @@ public class FlightRepository extends Repository<Flight> {
             rs.getString("airline"),
             rs.getString("origin"),
             rs.getString("destination"),
-            rs.getString("departure"),
-            rs.getString("arrival"),
+            rs.getDate("departure"),
+            rs.getDate("arrival"),
             rs.getFloat("price"),
             rs.getInt("seats_available")
         );

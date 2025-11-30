@@ -1,14 +1,16 @@
 package com.flightreservation.model;
 
+import java.util.Date;
+
 public class Booking {
     private int id;
     private int customerId;
     private int flightId;
     private String seatNumber;
-    private String bookingDate;
+    private Date bookingDate;
     private String status;
 
-    public Booking(int id, int customerId, int flightId, String seatNumber, String bookingDate, String status) {
+    public Booking(int id, int customerId, int flightId, String seatNumber, Date bookingDate, String status) {
         this.id = id;
         this.customerId = customerId;
         this.flightId = flightId;
@@ -33,7 +35,7 @@ public class Booking {
         return seatNumber;
     }
 
-    public String getBookingDate() {
+    public Date getBookingDate() {
         return bookingDate;
     }
 

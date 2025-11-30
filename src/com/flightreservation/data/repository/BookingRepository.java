@@ -18,7 +18,7 @@ public class BookingRepository extends Repository<Booking> {
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getFlightId());
             stmt.setString(3, data.getSeatNumber());
-            stmt.setString(4, data.getBookingDate());
+            stmt.setDate(4, new Date(data.getBookingDate().getTime()));
             stmt.setString(5, data.getStatus());
 
             stmt.executeUpdate();
@@ -58,7 +58,7 @@ public class BookingRepository extends Repository<Booking> {
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getFlightId());
             stmt.setString(3, data.getSeatNumber());
-            stmt.setString(4, data.getBookingDate());
+            stmt.setDate(4, new Date(data.getBookingDate().getTime()));
             stmt.setString(5, data.getStatus());
             stmt.setInt(6, id);
 
@@ -108,7 +108,7 @@ public class BookingRepository extends Repository<Booking> {
             rs.getInt("customer_id"),
             rs.getInt("flight_id"),
             rs.getString("seat_number"),
-            rs.getString("booking_date"),
+            rs.getDate("booking_date"),
             rs.getString("status")
         );
         return b;

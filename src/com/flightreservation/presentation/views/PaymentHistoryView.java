@@ -2,7 +2,6 @@ package com.flightreservation.presentation.views;
 
 import com.flightreservation.model.*;
 
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -91,7 +90,7 @@ public class PaymentHistoryView {
                 payment.getCustomerId(),
                 payment.getBookingId(),
                 String.format("$%.2f", payment.getAmount()),
-                dateFormat.format(payment.getDate()),
+                dateFormat.format(payment.getPaymentDate()),
                 payment.getMethod()
             };
             tableModel.addRow(row);
@@ -108,15 +107,11 @@ public class PaymentHistoryView {
         int customerId = (Integer) tableModel.getValueAt(selectedRow, 1);
         int bookingId = (Integer) tableModel.getValueAt(selectedRow, 2);
         String amountStr = (String) tableModel.getValueAt(selectedRow, 3);
-        double amount = Double.parseDouble(amountStr.replace("$", ""));
+        float amount = Float.parseFloat(amountStr.replace("$", ""));
+        String paymentDate = (String) tableModel.getValueAt(selectedRow, 4);
         String method = (String) tableModel.getValueAt(selectedRow, 5);
-        
-        Payment payment = new Payment();
-        payment.setId(id);
-        payment.setCustomerId(customerId);
-        payment.setBookingId(bookingId);
-        payment.setAmount(amount);
-        payment.setMethod(method);
+
+        Payment payment = new Payment(id, customerId, bookingId, amount, paymentDate, method);
         
         return payment;
     }

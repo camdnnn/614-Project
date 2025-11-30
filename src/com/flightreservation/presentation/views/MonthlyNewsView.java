@@ -2,7 +2,6 @@ package com.flightreservation.presentation.views;
 
 import com.flightreservation.model.*;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -96,7 +95,7 @@ public class MonthlyNewsView {
         titleLabel.setText(news.getTitle());
         
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateLabel.setText("Date: " + dateFormat.format(news.getDate()));
+        dateLabel.setText("Date: " + dateFormat.format(news.getPublishDate()));
         
         newsContentArea.setText(news.getContent());
         newsContentArea.setCaretPosition(0); // Scroll to top

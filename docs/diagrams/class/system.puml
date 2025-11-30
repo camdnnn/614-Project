@@ -9,13 +9,21 @@ skinparam class {
 ' Note: Getters/setters and constructors are omitted from entity classes as per project spec:
 ' "You don't need to show constructors/destructor, getters/setters."
 package "Data Layer" {
-  interface "Repository<T>" as Repository <<repository>> {
-    + create(data: T): void
-    + read(id: number): T
-    + update(id: number, data: T): void
-    + delete(id: number): void
-    + readAll(): List<T>
-    # mapRow(rs: ResultSet): T
+  class DBConnection <<boundary>> {
+    - {static} connection: Connection
+    - {static} props: Properties
+    + {static} getInstance(): Connection
+    - {static} loadProperties(): void
+    - {static} createConnection(): void
+  }
+
+  abstract class "Repository<T>" as Repository <<repository>> {
+    + {abstract} create(data: T): void
+    + {abstract} read(id: number): T
+    + {abstract} update(id: number, data: T): void
+    + {abstract} delete(id: number): void
+    + {abstract} readAll(): List<T>
+    # {abstract} mapRow(rs: ResultSet): T
   }
 
   class Booking <<entity>> {
@@ -113,16 +121,22 @@ package "Data Layer" {
     # mapRow(rs: ResultSet): MonthlyNews
   }
 
-  MonthlyNewsRepository ..|> Repository
+  MonthlyNewsRepository --|> Repository
   MonthlyNewsRepository -> MonthlyNews
-  BookingRepository ..|> Repository
+  BookingRepository --|> Repository
   BookingRepository -> Booking
-  FlightRepository ..|> Repository
+  FlightRepository --|> Repository
   FlightRepository -> Flight
-  PaymentRepository ..|> Repository
+  PaymentRepository --|> Repository
   PaymentRepository -> Payment 
-  UserRepository ..|> Repository
+  UserRepository --|> Repository
   UserRepository -> User
+
+  BookingRepository --> DBConnection : uses
+  FlightRepository --> DBConnection : uses
+  PaymentRepository --> DBConnection : uses
+  UserRepository --> DBConnection : uses
+  MonthlyNewsRepository --> DBConnection : uses
 }
 
 package "Presentation Layer" {

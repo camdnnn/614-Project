@@ -1,0 +1,32 @@
+@startuml ReservationStateDiagram
+title Reservation (Booking) Object State Transition Diagram
+
+[*] --> Pending : createBooking
+
+state Pending
+state Confirmed
+state Modified
+state Cancelled
+state Completed
+
+' --- Payment flow ---
+Pending --> Confirmed : pay / processPayment
+Pending --> Cancelled : timeout / expireBooking
+Pending --> Cancelled : cancel / cancelBooking
+
+' --- Modification flow ---
+Confirmed --> Modified : modify / updateBooking
+Modified --> Confirmed : save / confirmChanges
+Modified --> Cancelled : cancel / cancelBooking
+
+' --- Cancellation from confirmed ---
+Confirmed --> Cancelled : cancel / cancelBooking
+
+' --- Completion after flight ---
+Confirmed --> Completed : flightDepart / completeBooking
+
+Cancelled --> [*]
+Completed --> [*]
+
+@enduml
+

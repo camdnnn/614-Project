@@ -1,0 +1,82 @@
+@startuml PackageDiagram
+title Flight Reservation System - Package Diagram (3-Layer Architecture)
+
+skinparam classAttributeIconSize 0
+hide circle
+skinparam class {
+    FontStyle bold
+}
+
+' === PRESENTATION LAYER ===
+package "Presentation Layer" {
+    package "views" as views {
+        class LoginView <<boundary>>
+        class RoleSelectionView <<boundary>>
+        class CustomerMenuView <<boundary>>
+        class AgentMenuView <<boundary>>
+        class AdminMenuView <<boundary>>
+        class FlightSearchView <<boundary>>
+        class FlightResultsView <<boundary>>
+        class BookingView <<boundary>>
+        class BookingConfirmationView <<boundary>>
+        class BookingHistoryView <<boundary>>
+        class PaymentView <<boundary>>
+        class PaymentHistoryView <<boundary>>
+        class CustomerProfileView <<boundary>>
+        class FlightManagementView <<boundary>>
+        class MonthlyNewsView <<boundary>>
+    }
+}
+
+' === BUSINESS LOGIC LAYER ===
+package "Business Logic Layer" {
+    package "services" as services {
+        class AppController <<Singleton>>
+        class AuthService <<control>>
+        class UserService <<control>>
+        class FlightService <<control>>
+        class BookingService <<control>>
+        class PaymentService <<control>>
+        class NewsService <<control>>
+    }
+}
+
+' === DATA LAYER ===
+package "Data Layer" {
+    package "model" as model {
+        class User <<entity>>
+        class Flight <<entity>>
+        class Booking <<entity>>
+        class Payment <<entity>>
+        class MonthlyNews <<entity>>
+        enum Role
+    }
+    
+    package "repository" as repository {
+        abstract class "Repository<T>" as Repository <<repository>>
+        class UserRepository <<repository>>
+        class FlightRepository <<repository>>
+        class BookingRepository <<repository>>
+        class PaymentRepository <<repository>>
+        class MonthlyNewsRepository <<repository>>
+    }
+    
+    package "config" as config {
+        class DBConnection <<boundary>>
+    }
+}
+
+' === DEPENDENCIES BETWEEN LAYERS ===
+
+' Presentation calls Business Logic
+views ..> services : <<uses>>
+
+' Business Logic uses Data Layer
+services ..> repository : <<uses>>
+services ..> model : <<uses>>
+
+' Repository uses Model and Config
+repository ..> model : <<uses>>
+repository ..> config : <<uses>>
+
+@enduml

@@ -97,7 +97,7 @@ public class BookingHistoryView {
                 booking.getCustomerId(),
                 booking.getFlightId(),
                 booking.getSeatNumber(),
-                dateFormat.format(booking.getDate()),
+                dateFormat.format(booking.getBookingDate()),
                 booking.getStatus()
             };
             tableModel.addRow(row);
@@ -114,14 +114,10 @@ public class BookingHistoryView {
         int customerId = (Integer) tableModel.getValueAt(selectedRow, 1);
         int flightId = (Integer) tableModel.getValueAt(selectedRow, 2);
         String seatNumber = (String) tableModel.getValueAt(selectedRow, 3);
+        String bookingDate = (String) tableModel.getValueAt(selectedRow, 4);
         String status = (String) tableModel.getValueAt(selectedRow, 5);
         
-        Booking booking = new Booking();
-        booking.setId(id);
-        booking.setCustomerId(customerId);
-        booking.setFlightId(flightId);
-        booking.setSeatNumber(seatNumber);
-        booking.setStatus(status);
+        Booking booking = new Booking(id, customerId, flightId, seatNumber, bookingDate, status);
         
         return booking;
     }

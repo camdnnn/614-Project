@@ -9,6 +9,9 @@ Thumbs.db
 ~$*
 ~*.tmp
 
+# Database properties file
+db.properties
+
 # Compiled class files
 *.class
 

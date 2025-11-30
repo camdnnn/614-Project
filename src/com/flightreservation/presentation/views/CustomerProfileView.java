@@ -17,8 +17,7 @@ public class CustomerProfileView {
     private DefaultTableModel tableModel;
     private JTextField nameField;
     private JTextField emailField;
-    private JTextField phoneField;
-    private JTextField addressField;
+    private JTextField passwordField;
     private JButton addButton;
     private JButton updateButton;
     private JButton clearButton;
@@ -61,8 +60,7 @@ public class CustomerProfileView {
         // Form fields
         nameField = new JTextField(20);
         emailField = new JTextField(20);
-        phoneField = new JTextField(20);
-        addressField = new JTextField(20);
+        passwordField = new JTextField(20);
 
         // Buttons
         addButton = new JButton("Add");
@@ -120,19 +118,12 @@ public class CustomerProfileView {
         gbc.gridx = 1;
         formPanel.add(emailField, gbc);
 
-        // Phone
+        // Password
         gbc.gridx = 0;
         gbc.gridy = 2;
-        formPanel.add(new JLabel("Phone:"), gbc);
+        formPanel.add(new JLabel("Password:"), gbc);
         gbc.gridx = 1;
-        formPanel.add(phoneField, gbc);
-
-        // Address
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Address:"), gbc);
-        gbc.gridx = 1;
-        formPanel.add(addressField, gbc);
+        formPanel.add(passwordField, gbc);
 
         centerPanel.add(formPanel, BorderLayout.EAST);
 
@@ -154,8 +145,7 @@ public class CustomerProfileView {
         if (selectedRow != -1) {
             nameField.setText(tableModel.getValueAt(selectedRow, 1).toString());
             emailField.setText(tableModel.getValueAt(selectedRow, 2).toString());
-            phoneField.setText(tableModel.getValueAt(selectedRow, 3).toString());
-            addressField.setText(tableModel.getValueAt(selectedRow, 4).toString());
+            passwordField.setText(tableModel.getValueAt(selectedRow, 3).toString());
         }
     }
 
@@ -179,8 +169,7 @@ public class CustomerProfileView {
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
-                "",
-                "",
+                customer.getPassword(),
                 customer.getRole().toString()
             };
             tableModel.addRow(row);
@@ -190,8 +179,7 @@ public class CustomerProfileView {
     public void displayCustomerDetails(User customer) {
         nameField.setText(customer.getName());
         emailField.setText(customer.getEmail());
-        phoneField.setText("");
-        addressField.setText("");
+        passwordField.setText(customer.getPassword());
     }
 
     public String getSearchQuery() {
@@ -206,12 +194,8 @@ public class CustomerProfileView {
         return emailField.getText().trim();
     }
 
-    public String getCustomerPhone() {
-        return phoneField.getText().trim();
-    }
-
-    public String getCustomerAddress() {
-        return addressField.getText().trim();
+    public String getCustomerPassword() {
+        return passwordField.getText().trim();
     }
 
     public User getSelectedCustomer() {
@@ -223,11 +207,9 @@ public class CustomerProfileView {
         int id = (Integer) tableModel.getValueAt(selectedRow, 0);
         String name = (String) tableModel.getValueAt(selectedRow, 1);
         String email = (String) tableModel.getValueAt(selectedRow, 2);
+        String password = (String) tableModel.getValueAt(selectedRow, 3);
 
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setEmail(email);
+        User user = new User(id, name, email, password, Role.CUSTOMER);
 
         return user;
     }
@@ -235,8 +217,7 @@ public class CustomerProfileView {
     public void clearFields() {
         nameField.setText("");
         emailField.setText("");
-        phoneField.setText("");
-        addressField.setText("");
+        passwordField.setText("");
         searchField.setText("");
         customersTable.clearSelection();
     }

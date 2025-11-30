@@ -123,14 +123,14 @@ public class FlightResultsView {
         String airline = (String) tableModel.getValueAt(selectedRow, 1);
         String origin = (String) tableModel.getValueAt(selectedRow, 2);
         String destination = (String) tableModel.getValueAt(selectedRow, 3);
-        
+        String departure = (String) tableModel.getValueAt(selectedRow, 4);
+        String arrival = (String) tableModel.getValueAt(selectedRow, 5);
+        Float price = Float.parseFloat(tableModel.getValueAt(selectedRow, 6).toString().replace("$", ""));
+        int availableSeats = (Integer) tableModel.getValueAt(selectedRow, 7);
+
         // For now, return a minimal flight object
         // The controller should provide the actual Flight object
-        Flight flight = new Flight();
-        flight.setId(id);
-        flight.setAirline(airline);
-        flight.setOrigin(origin);
-        flight.setDestination(destination);
+        Flight flight = new Flight(id, airline, origin, destination, departure, arrival, price, availableSeats);
         
         return flight;
     }

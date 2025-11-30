@@ -16,6 +16,7 @@ public class FlightManagementView {
     private JTable flightsTable;
     private DefaultTableModel tableModel;
     private JTextField flightIdField;
+    private JTextField airlineField;
     private JTextField originField;
     private JTextField destinationField;
     private JTextField departureDateField;
@@ -27,6 +28,7 @@ public class FlightManagementView {
     private JButton removeButton;
     private JButton clearButton;
     private JButton backButton;
+    private boolean editingEnabled = true;
 
     public FlightManagementView() {
         initializeComponents();
@@ -61,6 +63,7 @@ public class FlightManagementView {
         // Form fields
         flightIdField = new JTextField(15);
         flightIdField.setEditable(false);
+        airlineField = new JTextField(15);
         originField = new JTextField(15);
         destinationField = new JTextField(15);
         departureDateField = new JTextField(15);
@@ -108,44 +111,51 @@ public class FlightManagementView {
         gbc.gridx = 1;
         formPanel.add(flightIdField, gbc);
 
-        // Origin
+        // Airline
         gbc.gridx = 0;
         gbc.gridy = 1;
+        formPanel.add(new JLabel("Airline:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(airlineField, gbc);
+
+        // Origin
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         formPanel.add(new JLabel("Origin:"), gbc);
         gbc.gridx = 1;
         formPanel.add(originField, gbc);
 
         // Destination
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         formPanel.add(new JLabel("Destination:"), gbc);
         gbc.gridx = 1;
         formPanel.add(destinationField, gbc);
 
         // Departure Date
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Departure Date:"), gbc);
+        gbc.gridy = 4;
+        formPanel.add(new JLabel("Departure Date (yyyy-MM-dd HH:mm):"), gbc);
         gbc.gridx = 1;
         formPanel.add(departureDateField, gbc);
 
         // Arrival Date
         gbc.gridx = 0;
-        gbc.gridy = 4;
-        formPanel.add(new JLabel("Arrival Date:"), gbc);
+        gbc.gridy = 5;
+        formPanel.add(new JLabel("Arrival Date (yyyy-MM-dd HH:mm):"), gbc);
         gbc.gridx = 1;
         formPanel.add(arrivalDateField, gbc);
 
         // Price
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         formPanel.add(new JLabel("Price:"), gbc);
         gbc.gridx = 1;
         formPanel.add(priceField, gbc);
 
         // Available Seats
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         formPanel.add(new JLabel("Available Seats:"), gbc);
         gbc.gridx = 1;
         formPanel.add(seatsField, gbc);
@@ -170,6 +180,7 @@ public class FlightManagementView {
         int selectedRow = flightsTable.getSelectedRow();
         if (selectedRow != -1) {
             flightIdField.setText(tableModel.getValueAt(selectedRow, 0).toString());
+            airlineField.setText(tableModel.getValueAt(selectedRow, 1).toString());
             originField.setText(tableModel.getValueAt(selectedRow, 2).toString());
             destinationField.setText(tableModel.getValueAt(selectedRow, 3).toString());
             departureDateField.setText(tableModel.getValueAt(selectedRow, 4).toString());
@@ -215,6 +226,10 @@ public class FlightManagementView {
         return flightIdField.getText().trim();
     }
 
+    public String getAirline() {
+        return airlineField.getText().trim();
+    }
+
     public String getOrigin() {
         return originField.getText().trim();
     }
@@ -249,8 +264,11 @@ public class FlightManagementView {
         String airline = (String) tableModel.getValueAt(selectedRow, 1);
         String origin = (String) tableModel.getValueAt(selectedRow, 2);
         String destination = (String) tableModel.getValueAt(selectedRow, 3);
-        Date departure = (Date) tableModel.getValueAt(selectedRow, 4);
-        Date arrival = (Date) tableModel.getValueAt(selectedRow, 5);
+        // Dates are stored as formatted strings in the table; parse back to Date
+        String departureStr = tableModel.getValueAt(selectedRow, 4).toString();
+        String arrivalStr = tableModel.getValueAt(selectedRow, 5).toString();
+        Date departure = parseDate(departureStr);
+        Date arrival = parseDate(arrivalStr);
         Float price = Float.parseFloat(tableModel.getValueAt(selectedRow, 6).toString().replace("$", ""));
         int availableSeats = (Integer) tableModel.getValueAt(selectedRow, 7);
 
@@ -261,6 +279,7 @@ public class FlightManagementView {
 
     public void clearFields() {
         flightIdField.setText("");
+        airlineField.setText("");
         originField.setText("");
         destinationField.setText("");
         departureDateField.setText("");
@@ -268,6 +287,31 @@ public class FlightManagementView {
         priceField.setText("");
         seatsField.setText("");
         flightsTable.clearSelection();
+    }
+
+    private Date parseDate(String value) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Toggle whether editing actions are enabled (for admin vs agent).
+     */
+    public void setEditingEnabled(boolean enabled) {
+        this.editingEnabled = enabled;
+        addButton.setEnabled(enabled);
+        updateButton.setEnabled(enabled);
+        removeButton.setEnabled(enabled);
+
+        originField.setEditable(enabled);
+        destinationField.setEditable(enabled);
+        departureDateField.setEditable(enabled);
+        arrivalDateField.setEditable(enabled);
+        priceField.setEditable(enabled);
+        seatsField.setEditable(enabled);
     }
 
     public void addAddListener(ActionListener listener) {

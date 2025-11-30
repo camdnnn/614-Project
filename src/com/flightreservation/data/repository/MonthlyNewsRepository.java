@@ -10,7 +10,7 @@ import java.util.List;
 public class MonthlyNewsRepository extends Repository<MonthlyNews> {
 
     public void create(MonthlyNews data) {
-        String sql = "INSERT INTO monthly_news (id, title, content, publish_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO monthlynews (id, title, content, publish_date) VALUES (?, ?, ?, ?)";
 
         try (var conn = DBConnection.getInstance();
              var stmt = conn.prepareStatement(sql)) {
@@ -28,7 +28,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
     }
 
     public MonthlyNews read(int id) {
-        String sql = "SELECT * FROM monthly_news WHERE id = ?";
+        String sql = "SELECT * FROM monthlynews WHERE id = ?";
         MonthlyNews news = null;
 
         try (var conn = DBConnection.getInstance();
@@ -49,7 +49,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
     }
 
     public void update(int id, MonthlyNews data) {
-        String sql = "UPDATE monthly_news SET title = ?, content = ?, publish_date = ? WHERE id = ?";
+        String sql = "UPDATE monthlynews SET title = ?, content = ?, publish_date = ? WHERE id = ?";
 
         try (var conn = DBConnection.getInstance();
              var stmt = conn.prepareStatement(sql)) {
@@ -67,7 +67,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
     }
 
     public void delete(int id) {
-        String sql = "DELETE FROM monthly_news WHERE id = ?";
+        String sql = "DELETE FROM monthlynews WHERE id = ?";
 
         try (var conn = DBConnection.getInstance();
              var stmt = conn.prepareStatement(sql)) {
@@ -81,7 +81,7 @@ public class MonthlyNewsRepository extends Repository<MonthlyNews> {
     }
 
     public List<MonthlyNews> getAll() {
-        String sql = "SELECT * FROM monthly_news";
+        String sql = "SELECT * FROM monthlynews";
         List<MonthlyNews> list = new ArrayList<>();
 
         try (var conn = DBConnection.getInstance();

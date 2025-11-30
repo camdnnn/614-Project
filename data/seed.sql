@@ -1,9 +1,9 @@
 -- USERS
 INSERT INTO Users (name, email, password, role) VALUES
-('Alice Johnson', 'alice@example.com', 'password123', 'customer'),
-('Bob Smith', 'bob@example.com', 'password123', 'customer'),
-('Jane Agent', 'jane.agent@example.com', 'password123', 'agent'),
-('Admin User', 'admin@example.com', 'securepass', 'admin');
+('Alice Johnson', 'alice@example.com', 'password123', 'CUSTOMER'),
+('Bob Smith', 'bob@example.com', 'password123', 'CUSTOMER'),
+('Jane Agent', 'jane.agent@example.com', 'password123', 'AGENT'),
+('Admin User', 'admin@example.com', 'securepass', 'ADMIN');
 
 -- FLIGHTS
 INSERT INTO Flights (airline, origin, destination, departure, arrival, price, seats_available) VALUES

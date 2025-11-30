@@ -149,6 +149,10 @@ public class FlightResultsView {
         backButton.addActionListener(listener);
     }
 
+    public int getSelectedRowIndex() {
+        return flightsTable.getSelectedRow();
+    }
+
     public JFrame getFrame() {
         return frame;
     }

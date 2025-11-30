@@ -1,39 +1,115 @@
 package com.flightreservation.data.repository;
 
-import java.util.List;
-
+import com.flightreservation.data.config.DBConnection;
+import com.flightreservation.model.Role;
 import com.flightreservation.model.User;
 
-public class UserRepository implements Repository<User> {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    @Override
+public class UserRepository extends Repository<User> {
+
     public void create(User data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+        String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, data.getName());
+            stmt.setString(2, data.getEmail());
+            stmt.setString(3, data.getPassword());
+            stmt.setString(4, data.getRole().name());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public User read(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'read'");
+        String sql = "SELECT * FROM users WHERE id = ?";
+        User user = null;
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                user = mapRow(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
     }
 
-    @Override
     public void update(int id, User data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        String sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, data.getName());
+            stmt.setString(2, data.getEmail());
+            stmt.setString(3, data.getPassword());
+            stmt.setString(4, data.getRole().name());
+            stmt.setInt(5, id);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public void delete(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public List<User> getAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
+        String sql = "SELECT * FROM users";
+        List<User> users = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(mapRow(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+    protected User mapRow(ResultSet rs) throws SQLException {
+        User u = new User(
+            rs.getInt("id"),
+            rs.getString("name"),
+            rs.getString("email"),
+            rs.getString("password"),
+            Role.valueOf(rs.getString("role"))
+        );
+        return u;
     }
     
 }

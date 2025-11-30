@@ -1,39 +1,118 @@
 package com.flightreservation.data.repository;
 
-import java.util.List;
-
+import com.flightreservation.data.config.DBConnection;
 import com.flightreservation.model.Payment;
 
-public class PaymentRepository implements Repository<Payment> {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    @Override
+public class PaymentRepository extends Repository<Payment> {
+
     public void create(Payment data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+        String sql = "INSERT INTO payments (customer_id, booking_id, amount, payment_date, method) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, data.getCustomerId());
+            stmt.setInt(2, data.getBookingId());
+            stmt.setFloat(3, data.getAmount());
+            stmt.setString(4, data.getPaymentDate());
+            stmt.setString(5, data.getMethod());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public Payment read(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'read'");
+        String sql = "SELECT * FROM payments WHERE id = ?";
+        Payment payment = null;
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                payment = mapRow(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return payment;
     }
 
-    @Override
     public void update(int id, Payment data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        String sql = "UPDATE payments SET customer_id = ?, booking_id = ?, amount = ?, payment_date = ?, method = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, data.getCustomerId());
+            stmt.setInt(2, data.getBookingId());
+            stmt.setFloat(3, data.getAmount());
+            stmt.setString(4, data.getPaymentDate());
+            stmt.setString(5, data.getMethod());
+            stmt.setInt(6, id);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public void delete(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        String sql = "DELETE FROM payments WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public List<Payment> getAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
+        String sql = "SELECT * FROM payments";
+        List<Payment> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Payment payment = mapRow(rs);
+                list.add(payment);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    protected Payment mapRow(ResultSet rs) throws SQLException {
+        Payment p = new Payment(
+            rs.getInt("id"),
+            rs.getInt("customer_id"),
+            rs.getInt("booking_id"),
+            rs.getFloat("amount"),
+            rs.getString("payment_date"),
+            rs.getString("method")
+        );
+        return p;
     }
     
 }

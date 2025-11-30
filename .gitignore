@@ -59,8 +59,6 @@ nbdist/
 .nb-gradle/
 
 # Package Files
-*.jar
-*.war
 *.ear
 *.nar
 *.zip

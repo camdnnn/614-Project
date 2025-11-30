@@ -7,7 +7,7 @@ CREATE TABLE Users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
-    role ENUM('customer', 'agent', 'admin') NOT NULL DEFAULT 'customer'
+    role ENUM('CUSTOMER', 'AGENT', 'ADMIN') NOT NULL DEFAULT 'CUSTOMER'
 );
 
 CREATE TABLE Flights (

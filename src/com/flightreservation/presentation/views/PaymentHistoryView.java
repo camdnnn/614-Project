@@ -104,13 +104,19 @@ public class PaymentHistoryView {
             return null;
         }
         
-        int id = (Integer) tableModel.getValueAt(selectedRow, 0);
-        int customerId = (Integer) tableModel.getValueAt(selectedRow, 1);
-        int bookingId = (Integer) tableModel.getValueAt(selectedRow, 2);
-        String amountStr = (String) tableModel.getValueAt(selectedRow, 3);
+        int id = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+        int customerId = Integer.parseInt(tableModel.getValueAt(selectedRow, 1).toString());
+        int bookingId = Integer.parseInt(tableModel.getValueAt(selectedRow, 2).toString());
+        String amountStr = tableModel.getValueAt(selectedRow, 3).toString();
         float amount = Float.parseFloat(amountStr.replace("$", ""));
-        Date paymentDate = (Date) tableModel.getValueAt(selectedRow, 4);
-        String method = (String) tableModel.getValueAt(selectedRow, 5);
+        String dateStr = tableModel.getValueAt(selectedRow, 4).toString();
+        Date paymentDate;
+        try {
+            paymentDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+        } catch (Exception e) {
+            paymentDate = null;
+        }
+        String method = tableModel.getValueAt(selectedRow, 5).toString();
 
         Payment payment = new Payment(id, customerId, bookingId, amount, paymentDate, method);
         

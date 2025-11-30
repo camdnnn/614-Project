@@ -15,109 +15,110 @@ package "Data Layer" {
     + {static} getInstance(): Connection
     - {static} loadProperties(): void
     - {static} createConnection(): void
+    - {static} getFirstNonBlank(primaryKey: String, fallbackKey: String): String
   }
 
   abstract class "Repository<T>" as Repository <<repository>> {
     + {abstract} create(data: T): void
-    + {abstract} read(id: number): T
-    + {abstract} update(id: number, data: T): void
-    + {abstract} delete(id: number): void
-    + {abstract} readAll(): List<T>
+    + {abstract} read(id: int): T
+    + {abstract} update(id: int, data: T): void
+    + {abstract} delete(id: int): void
+    + {abstract} getAll(): List<T>
     # {abstract} mapRow(rs: ResultSet): T
   }
 
   class Booking <<entity>> {
-    - id: number 
-    - customerId: number
-    - flightId: number
-    - seatNumber: string
-    - date: Date
-    - status: string
+    - id: int 
+    - customerId: int
+    - flightId: int
+    - seatNumber: String
+    - bookingDate: Date
+    - status: String
   }
 
   class BookingRepository <<repository>> {
     + create(data: Booking): void
-    + read(id: number): Booking
-    + update(id: number, data: Booking): void
-    + delete(id: number): void
-    + readAll(): List<Booking>
+    + read(id: int): Booking
+    + update(id: int, data: Booking): void
+    + delete(id: int): void
+    + getAll(): List<Booking>
     # mapRow(rs: ResultSet): Booking
   }
 
   class Flight <<entity>> {
-    - id: number
-    - airline: string
-    - origin: string
-    - destination: string
+    - id: int
+    - airline: String
+    - origin: String
+    - destination: String
     - departure: Date
     - arrival: Date
     - price: float
-    - availableSeats: number
+    - availableSeats: int
   }
 
   class FlightRepository <<repository>> {
     + create(data: Flight): void
-    + read(id: number): Flight
-    + update(id: number, data: Flight): void
-    + delete(id: number): void
-    + readAll(): List<Flight>
+    + read(id: int): Flight
+    + update(id: int, data: Flight): void
+    + delete(id: int): void
+    + getAll(): List<Flight>
     # mapRow(rs: ResultSet): Flight
   }
 
   class Payment <<entity>> {
-    - id: number
-    - customerId: number
-    - bookingId: number
+    - id: int
+    - customerId: int
+    - bookingId: int
     - amount: float
-    - date: Date
-    - method: string
+    - paymentDate: Date
+    - method: String
   }
 
   class PaymentRepository <<repository>> {
     + create(data: Payment): void
-    + read(id: number): Payment
-    + update(id: number, data: Payment): void
-    + delete(id: number): void
-    + readAll(): List<Payment>
+    + read(id: int): Payment
+    + update(id: int, data: Payment): void
+    + delete(id: int): void
+    + getAll(): List<Payment>
     # mapRow(rs: ResultSet): Payment
   }
 
   enum Role {
-    CUSTOMER
-    FLIGHT_AGENT
     ADMIN
+    AGENT
+    CUSTOMER
   }
 
   class User <<entity>> {
-    - id: number
-    - name: string
-    - email: string
-    - password: string
+    - id: int
+    - name: String
+    - email: String
+    - password: String
     - role: Role
   }
 
   class UserRepository <<repository>> {
     + create(data: User): void
-    + read(id: number): User
-    + update(id: number, data: User): void
-    + delete(id: number): void
-    + readAll(): List<User>
+    + read(id: int): User
+    + update(id: int, data: User): void
+    + delete(id: int): void
+    + getAll(): List<User>
     # mapRow(rs: ResultSet): User
   }
 
   class MonthlyNews <<entity>> {
-    - id: number
-    - title: string
-    - content: string
-    - date: Date
+    - id: int
+    - title: String
+    - content: String
+    - publishDate: Date
   }
 
   class MonthlyNewsRepository <<repository>> {
     + create(data: MonthlyNews): void
-    + read(id: number): MonthlyNews
-    + update(id: number, data: MonthlyNews): void
-    + delete(id: number): void
-    + readAll(): List<MonthlyNews>
+    + read(id: int): MonthlyNews
+    + update(id: int, data: MonthlyNews): void
+    + delete(id: int): void
+    + getAll(): List<MonthlyNews>
     # mapRow(rs: ResultSet): MonthlyNews
   }
 
@@ -141,12 +142,13 @@ package "Data Layer" {
 
 package "Presentation Layer" {
   class LoginView <<boundary>> {
+    - frame: JFrame
     - usernameField: JTextField
     - passwordField: JPasswordField
     - loginButton: JButton
     - errorLabel: JLabel
-    - frame: JFrame
     + display(): void
+    + dispose(): void
     + getUsername(): String
     + getPassword(): String
     + showError(message: String): void
@@ -164,6 +166,7 @@ package "Presentation Layer" {
     - adminButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + addCustomerListener(listener: ActionListener): void
     + addAgentListener(listener: ActionListener): void
     + addAdminListener(listener: ActionListener): void
@@ -183,6 +186,7 @@ package "Presentation Layer" {
     - viewNewsButton: JButton
     - logoutButton: JButton
     + display(): void
+    + dispose(): void
     + addSearchFlightsListener(listener: ActionListener): void
     + addViewBookingsListener(listener: ActionListener): void
     + addViewPaymentsListener(listener: ActionListener): void
@@ -198,6 +202,7 @@ package "Presentation Layer" {
     - viewPaymentsButton: JButton
     - logoutButton: JButton
     + display(): void
+    + dispose(): void
     + addManageBookingsListener(listener: ActionListener): void
     + addManageCustomersListener(listener: ActionListener): void
     + addViewFlightsListener(listener: ActionListener): void
@@ -211,6 +216,7 @@ package "Presentation Layer" {
     - viewFlightsButton: JButton
     - logoutButton: JButton
     + display(): void
+    + dispose(): void
     + addManageFlightsListener(listener: ActionListener): void
     + addViewFlightsListener(listener: ActionListener): void
     + addLogoutListener(listener: ActionListener): void
@@ -226,6 +232,7 @@ package "Presentation Layer" {
     - clearButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + getOrigin(): String
     + getDestination(): String
     + getDepartureDate(): String
@@ -244,8 +251,9 @@ package "Presentation Layer" {
     - backButton: JButton
     - noResultsLabel: JLabel
     + display(): void
+    + dispose(): void
     + displayFlights(flights: List<Flight>): void
-    + getSelectedFlight(): Flight
+    + getSelectedRowIndex(): int
     + showNoResults(): void
     + addSelectListener(listener: ActionListener): void
     + addBackListener(listener: ActionListener): void
@@ -262,6 +270,7 @@ package "Presentation Layer" {
     - modifyButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + displayFlightDetails(flight: Flight): void
     + displayBookingDetails(booking: Booking): void
     + getSeatSelection(): String
@@ -284,6 +293,7 @@ package "Presentation Layer" {
     - printButton: JButton
     - doneButton: JButton
     + display(): void
+    + dispose(): void
     + displayConfirmation(booking: Booking, flight: Flight): void
     + setConfirmationNumber(number: String): void
     + addPrintListener(listener: ActionListener): void
@@ -302,6 +312,7 @@ package "Presentation Layer" {
     - modifyBookingButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + displayBookings(bookings: List<Booking>): void
     + getSelectedBooking(): Booking
     + refreshTable(): void
@@ -322,6 +333,7 @@ package "Presentation Layer" {
     - cancelButton: JButton
     - statusLabel: JLabel
     + display(): void
+    + dispose(): void
     + displayAmount(amount: float): void
     + getCardNumber(): String
     + getCardHolder(): String
@@ -344,6 +356,7 @@ package "Presentation Layer" {
     - viewDetailsButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + displayPayments(payments: List<Payment>): void
     + getSelectedPayment(): Payment
     + addViewDetailsListener(listener: ActionListener): void
@@ -358,20 +371,19 @@ package "Presentation Layer" {
     - tableModel: DefaultTableModel
     - nameField: JTextField
     - emailField: JTextField
-    - phoneField: JTextField
-    - addressField: JTextField
+    - passwordField: JTextField
     - addButton: JButton
     - updateButton: JButton
     - clearButton: JButton
     - backButton: JButton
     + display(): void
+    + dispose(): void
     + displayCustomers(customers: List<User>): void
     + displayCustomerDetails(customer: User): void
     + getSearchQuery(): String
     + getCustomerName(): String
     + getCustomerEmail(): String
-    + getCustomerPhone(): String
-    + getCustomerAddress(): String
+    + getCustomerPassword(): String
     + getSelectedCustomer(): User
     + clearFields(): void
     + addSearchListener(listener: ActionListener): void
@@ -386,6 +398,7 @@ package "Presentation Layer" {
     - flightsTable: JTable
     - tableModel: DefaultTableModel
     - flightIdField: JTextField
+    - airlineField: JTextField
     - originField: JTextField
     - destinationField: JTextField
     - departureDateField: JTextField
@@ -397,9 +410,12 @@ package "Presentation Layer" {
     - removeButton: JButton
     - clearButton: JButton
     - backButton: JButton
+    - editingEnabled: boolean
     + display(): void
+    + dispose(): void
     + displayFlights(flights: List<Flight>): void
     + getFlightId(): String
+    + getAirline(): String
     + getOrigin(): String
     + getDestination(): String
     + getDepartureDate(): String
@@ -408,6 +424,7 @@ package "Presentation Layer" {
     + getSeats(): String
     + getSelectedFlight(): Flight
     + clearFields(): void
+    + setEditingEnabled(enabled: boolean): void
     + addAddListener(listener: ActionListener): void
     + addUpdateListener(listener: ActionListener): void
     + addRemoveListener(listener: ActionListener): void
@@ -424,10 +441,39 @@ package "Presentation Layer" {
     - backButton: JButton
     - refreshButton: JButton
     + display(): void
+    + dispose(): void
     + displayNews(news: MonthlyNews): void
     + clearNews(): void
     + addBackListener(listener: ActionListener): void
     + addRefreshListener(listener: ActionListener): void
+  }
+
+  ' UiController is the main presentation controller that wires views to services
+  class UiController <<control>> {
+    - authService: AuthService
+    - newsService: NewsService
+    - flightService: FlightService
+    - bookingService: BookingService
+    - paymentService: PaymentService
+    - userService: UserService
+    - currentUser: User
+    - lastFlights: List<Flight>
+    - loginView: LoginView
+    - customerMenuView: CustomerMenuView
+    - agentMenuView: AgentMenuView
+    - adminMenuView: AdminMenuView
+    - flightSearchView: FlightSearchView
+    - flightResultsView: FlightResultsView
+    - bookingView: BookingView
+    - paymentView: PaymentView
+    - newsView: MonthlyNewsView
+    - confirmationView: BookingConfirmationView
+    - bookingHistoryView: BookingHistoryView
+    - paymentHistoryView: PaymentHistoryView
+    - flightManagementView: FlightManagementView
+    - customerProfileView: CustomerProfileView
+    - roleSelectionView: RoleSelectionView
+    + start(): void
   }
 
   ' Navigation relationships
@@ -462,45 +508,42 @@ package "Business Logic Layer" {
 
   ' AppController centralizes interactions from Presentation -> BLL
   class AppController <<Singleton>> {
-    - authService: AuthService
-    - userService: UserService
-    - flightService: FlightService
-    - bookingService: BookingService
+    - {static} instance: AppController
     - paymentService: PaymentService
-    - newsService: NewsService
-    + login(username: String, password: String): User
-    + logout(userId: number): void
-    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
-    + createBooking(customerId: number, flightId: number, seat: String): Booking
-    + processPaymentWithStrategy(bookingId: number, amount: float, strategy: PaymentStrategy): Payment
-    + getMonthlyNews(): MonthlyNews
-    + refreshNews(): void
-    + getBookingsForCustomer(customerId: number): List<Booking>
-    + createUser(user: User): void
-    + updateUser(id: number, user: User): void
-    + addViewSubscriber(view: Object): void
+    - bookingService: BookingService
+    - flightService: FlightService
+    - userService: UserService
+    + {static} init(paymentService: PaymentService, bookingService: BookingService, flightService: FlightService, userService: UserService): AppController
+    + {static} getInstance(): AppController
+    + payForBooking(payment: Payment): Payment
+    + getBooking(bookingId: int): Booking
+    + getAllBookings(): List<Booking>
     + getAllFlights(): List<Flight>
     + addFlight(flight: Flight): void
-    + updateFlight(id: number, flight: Flight): void
-    + removeFlight(id: number): void
+    + updateFlight(id: int, flight: Flight): void
+    + removeFlight(id: int): void
+    + getAllUsers(): List<User>
+    + createUser(user: User): void
+    + updateUser(id: int, user: User): void
+    + deleteUser(id: int): void
   }
 
   ' -----------------------------
   ' Authentication / User Logic
   ' -----------------------------
   class AuthService <<control>> {
+    - userRepository: Repository<User>
     + login(email: String, password: String): User
-    + logout(userId: number): void
     + verifyRole(user: User, requiredRole: Role): boolean
   }
 
   class UserService <<control>> {
-    - userRepository: UserRepository
-    + getUserById(id: number): User
+    - userRepository: Repository<User>
     + getAllUsers(): List<User>
-    + searchUsers(query: String): List<User>
+    + getUser(id: int): User
     + createUser(user: User): void
-    + updateUser(id: number, user: User): void
+    + updateUser(id: int, user: User): void
+    + deleteUser(id: int): void
   }
 
 
@@ -508,14 +551,12 @@ package "Business Logic Layer" {
   ' Flight Logic
   ' -----------------------------
   class FlightService <<control>> {
-    - flightRepository: FlightRepository
-    + searchFlights(origin: String, destination: String, date: Date, airline: String): List<Flight>
-    + getFlightById(id: number): Flight
+    - flightRepository: Repository<Flight>
     + getAllFlights(): List<Flight>
+    + getFlight(id: int): Flight
     + addFlight(flight: Flight): void
-    + updateFlight(id: number, flight: Flight): void
-    + removeFlight(id: number): void
-    + hasAvailableSeats(flightId: number): boolean
+    + updateFlight(id: int, flight: Flight): void
+    + removeFlight(id: int): void
   }
 
 
@@ -523,14 +564,13 @@ package "Business Logic Layer" {
   ' Booking Logic
   ' -----------------------------
   class BookingService <<control>> {
-    - bookingRepository: BookingRepository
-    - flightService: FlightService
-    + createBooking(customerId: number, flightId: number, seat: String): Booking
-    + cancelBooking(id: number): void
-    + updateBooking(id: number, seat: String): void
-    + getBookingById(id: number): Booking
+    - bookingRepository: Repository<Booking>
+    + getBookingById(bookingId: int): Booking
     + getAllBookings(): List<Booking>
-    + getBookingsForCustomer(customerId: number): List<Booking>
+    + addBooking(booking: Booking): void
+    + updateBooking(id: int, booking: Booking): void
+    + deleteBooking(id: int): void
+    + markPaid(bookingId: int): void
   }
 
 
@@ -538,10 +578,10 @@ package "Business Logic Layer" {
   ' Payment Logic
   ' -----------------------------
   class PaymentService <<control>> {
-    - paymentRepository: PaymentRepository
+    - paymentRepository: Repository<Payment>
     - bookingService: BookingService
-    + processPayment(bookingId: number, amount: float, method: String): Payment
-    + getPaymentsForCustomer(customerId: number): List<Payment>
+    + recordPayment(payment: Payment): Payment
+    + getPayment(id: int): Payment
     + getAllPayments(): List<Payment>
   }
 
@@ -550,6 +590,8 @@ package "Business Logic Layer" {
   ' News Logic (Static Content)
   ' -----------------------------
   class NewsService <<control>> {
+    - newsRepository: Repository<MonthlyNews>
+    - cachedNews: MonthlyNews
     + getMonthlyNews(): MonthlyNews
     + refreshNews(): void
   }
@@ -563,7 +605,6 @@ package "Business Logic Layer" {
   FlightService --> FlightRepository : queries
 
   BookingService --> BookingRepository : queries
-  BookingService --> FlightService : calls to
 
   PaymentService --> PaymentRepository : queries
   PaymentService --> BookingService : calls to
@@ -573,28 +614,36 @@ package "Business Logic Layer" {
   ' -----------------------------
   ' App Controller Dependencies
   ' -----------------------------
-  AppController *-- AuthService
-  AppController *-- UserService
-  AppController *-- FlightService
-  AppController *-- BookingService
   AppController *-- PaymentService
-  AppController *-- NewsService
+  AppController *-- BookingService
+  AppController *-- FlightService
+  AppController *-- UserService
 
-  LoginView --> AppController : calls to
-  RoleSelectionView --> AppController : calls to
-  CustomerMenuView --> AppController : calls to
-  AgentMenuView --> AppController : calls to
-  AdminMenuView --> AppController : calls to
-  MonthlyNewsView --> AppController : calls to
-  BookingHistoryView --> AppController : calls to
-  FlightSearchView --> AppController : calls to
-  PaymentHistoryView --> AppController : calls to
-  FlightResultsView --> AppController : calls to
-  CustomerProfileView --> AppController : calls to
-  FlightManagementView --> AppController : calls to
-  BookingView --> AppController : calls to
-  BookingConfirmationView --> AppController : calls to
-  PaymentView --> AppController : calls to
+  ' -----------------------------
+  ' UiController Dependencies
+  ' -----------------------------
+  UiController *-- AuthService
+  UiController *-- NewsService
+  UiController *-- FlightService
+  UiController *-- BookingService
+  UiController *-- PaymentService
+  UiController *-- UserService
+  
+  UiController --> LoginView : manages
+  UiController --> RoleSelectionView : manages
+  UiController --> CustomerMenuView : manages
+  UiController --> AgentMenuView : manages
+  UiController --> AdminMenuView : manages
+  UiController --> MonthlyNewsView : manages
+  UiController --> BookingHistoryView : manages
+  UiController --> FlightSearchView : manages
+  UiController --> PaymentHistoryView : manages
+  UiController --> FlightResultsView : manages
+  UiController --> CustomerProfileView : manages
+  UiController --> FlightManagementView : manages
+  UiController --> BookingView : manages
+  UiController --> BookingConfirmationView : manages
+  UiController --> PaymentView : manages
   
 }
 

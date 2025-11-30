@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class BookingHistoryView {
@@ -114,7 +115,7 @@ public class BookingHistoryView {
         int customerId = (Integer) tableModel.getValueAt(selectedRow, 1);
         int flightId = (Integer) tableModel.getValueAt(selectedRow, 2);
         String seatNumber = (String) tableModel.getValueAt(selectedRow, 3);
-        String bookingDate = (String) tableModel.getValueAt(selectedRow, 4);
+        Date bookingDate = (Date) tableModel.getValueAt(selectedRow, 4);
         String status = (String) tableModel.getValueAt(selectedRow, 5);
         
         Booking booking = new Booking(id, customerId, flightId, seatNumber, bookingDate, status);

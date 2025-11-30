@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class FlightManagementView {
@@ -248,8 +249,8 @@ public class FlightManagementView {
         String airline = (String) tableModel.getValueAt(selectedRow, 1);
         String origin = (String) tableModel.getValueAt(selectedRow, 2);
         String destination = (String) tableModel.getValueAt(selectedRow, 3);
-        String departure = (String) tableModel.getValueAt(selectedRow, 4);
-        String arrival = (String) tableModel.getValueAt(selectedRow, 5);
+        Date departure = (Date) tableModel.getValueAt(selectedRow, 4);
+        Date arrival = (Date) tableModel.getValueAt(selectedRow, 5);
         Float price = Float.parseFloat(tableModel.getValueAt(selectedRow, 6).toString().replace("$", ""));
         int availableSeats = (Integer) tableModel.getValueAt(selectedRow, 7);
 

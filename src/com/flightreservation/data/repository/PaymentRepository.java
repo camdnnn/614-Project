@@ -18,7 +18,7 @@ public class PaymentRepository extends Repository<Payment> {
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getBookingId());
             stmt.setFloat(3, data.getAmount());
-            stmt.setString(4, data.getPaymentDate());
+            stmt.setDate(4, new Date(data.getPaymentDate().getTime()));
             stmt.setString(5, data.getMethod());
 
             stmt.executeUpdate();
@@ -58,7 +58,7 @@ public class PaymentRepository extends Repository<Payment> {
             stmt.setInt(1, data.getCustomerId());
             stmt.setInt(2, data.getBookingId());
             stmt.setFloat(3, data.getAmount());
-            stmt.setString(4, data.getPaymentDate());
+            stmt.setDate(4, new Date(data.getPaymentDate().getTime()));
             stmt.setString(5, data.getMethod());
             stmt.setInt(6, id);
 
@@ -109,7 +109,7 @@ public class PaymentRepository extends Repository<Payment> {
             rs.getInt("customer_id"),
             rs.getInt("booking_id"),
             rs.getFloat("amount"),
-            rs.getString("payment_date"),
+            rs.getDate("payment_date"),
             rs.getString("method")
         );
         return p;

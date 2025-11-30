@@ -1,12 +1,14 @@
 package com.flightreservation.model;
 
+import java.util.Date;
+
 public class MonthlyNews {
     private int id;
     private String title;
     private String content;
-    private String publishDate;
+    private Date publishDate;
 
-    public MonthlyNews(int id, String title, String content, String publishDate) {
+    public MonthlyNews(int id, String title, String content, Date publishDate) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -25,7 +27,7 @@ public class MonthlyNews {
         return content;
     }
 
-    public String getPublishDate() {
+    public Date getPublishDate() {
         return publishDate;
     }
 }

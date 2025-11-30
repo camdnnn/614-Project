@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class PaymentHistoryView {
@@ -108,7 +109,7 @@ public class PaymentHistoryView {
         int bookingId = (Integer) tableModel.getValueAt(selectedRow, 2);
         String amountStr = (String) tableModel.getValueAt(selectedRow, 3);
         float amount = Float.parseFloat(amountStr.replace("$", ""));
-        String paymentDate = (String) tableModel.getValueAt(selectedRow, 4);
+        Date paymentDate = (Date) tableModel.getValueAt(selectedRow, 4);
         String method = (String) tableModel.getValueAt(selectedRow, 5);
 
         Payment payment = new Payment(id, customerId, bookingId, amount, paymentDate, method);

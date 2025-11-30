@@ -1,5 +1,7 @@
 package com.flightreservation.data.repository;
 
+import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.util.List;
 
 public abstract class Repository<T> {
@@ -8,5 +10,5 @@ public abstract class Repository<T> {
     public abstract void update(int id, T data);
     public abstract void delete(int id);
     public abstract List<T> getAll();
-    protected abstract T mapRow(java.sql.ResultSet rs) throws java.sql.SQLException;
+    protected abstract T mapRow(ResultSet rs) throws SQLException;
 }

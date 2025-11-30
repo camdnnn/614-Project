@@ -1,9 +1,29 @@
 @startuml SystemClassDiagram
 
+' Layout + styling tweaks for better screenshot fit
+left to right direction
+scale 0.35
+skinparam shadowing false
+skinparam padding 2
+skinparam linetype ortho
+
 skinparam classAttributeIconSize 0
 hide circle
 skinparam class {
     FontStyle bold
+    FontSize 12
+    AttributeFontSize 11
+    RoundCorner 10
+    Padding 6
+    BackgroundColor #FCFCFC
+    BorderColor #3D3D3D
+}
+
+skinparam package {
+    FontSize 14
+    BackgroundColor #F4F4F4
+    BorderColor #2F2F2F
+    Padding 10
 }
 
 ' Note: Getters/setters and constructors are omitted from entity classes as per project spec:

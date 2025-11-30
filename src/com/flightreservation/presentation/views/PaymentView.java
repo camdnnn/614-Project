@@ -98,7 +98,7 @@ public class PaymentView {
         // Status label
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         statusPanel.add(statusLabel);
-        mainPanel.add(statusPanel, BorderLayout.CENTER);
+        mainPanel.add(statusPanel, BorderLayout.EAST);
 
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));

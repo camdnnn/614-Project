@@ -16,19 +16,23 @@ import com.flightreservation.business.service.UserService;
 import com.flightreservation.model.Booking;
 import com.flightreservation.model.Flight;
 import com.flightreservation.model.Payment;
+import com.flightreservation.model.Role;
 import com.flightreservation.model.User;
 import com.flightreservation.presentation.views.AdminMenuView;
 import com.flightreservation.presentation.views.AgentMenuView;
 import com.flightreservation.presentation.views.BookingConfirmationView;
 import com.flightreservation.presentation.views.BookingHistoryView;
 import com.flightreservation.presentation.views.BookingView;
+import com.flightreservation.presentation.views.CustomerProfileView;
 import com.flightreservation.presentation.views.CustomerMenuView;
+import com.flightreservation.presentation.views.FlightManagementView;
 import com.flightreservation.presentation.views.FlightResultsView;
 import com.flightreservation.presentation.views.FlightSearchView;
 import com.flightreservation.presentation.views.LoginView;
 import com.flightreservation.presentation.views.MonthlyNewsView;
 import com.flightreservation.presentation.views.PaymentHistoryView;
 import com.flightreservation.presentation.views.PaymentView;
+import com.flightreservation.presentation.views.RoleSelectionView;
 
 /**
  * Presentation controller that wires views to the services so the UI is usable.
@@ -56,6 +60,9 @@ public class UiController {
     private BookingConfirmationView confirmationView;
     private BookingHistoryView bookingHistoryView;
     private PaymentHistoryView paymentHistoryView;
+    private FlightManagementView flightManagementView;
+    private CustomerProfileView customerProfileView;
+    private RoleSelectionView roleSelectionView;
 
     public UiController(AuthService authService,
                         NewsService newsService,
@@ -72,6 +79,24 @@ public class UiController {
     }
 
     public void start() {
+        showRoleSelect();
+    }
+
+    private void showRoleSelect() {
+        disposeAll();
+        roleSelectionView = new RoleSelectionView();
+        roleSelectionView.addCustomerListener(e -> gotoLogin());
+        roleSelectionView.addAgentListener(e -> gotoLogin());
+        roleSelectionView.addAdminListener(e -> gotoLogin());
+        roleSelectionView.addBackListener(e -> gotoLogin());
+        roleSelectionView.display();
+    }
+
+    private void gotoLogin() {
+        if (roleSelectionView != null) {
+            roleSelectionView.dispose();
+            roleSelectionView = null;
+        }
         showLogin();
     }
 
@@ -123,7 +148,10 @@ public class UiController {
         disposeMenus();
         agentMenuView = new AgentMenuView();
         agentMenuView.addLogoutListener(e -> showLogin());
-        agentMenuView.addViewFlightsListener(e -> showFlightSearch());
+        agentMenuView.addManageBookingsListener(e -> showAgentBookings());
+        agentMenuView.addViewPaymentsListener(e -> showAllPayments());
+        agentMenuView.addManageCustomersListener(e -> showCustomerProfiles());
+        agentMenuView.addViewFlightsListener(e -> showFlightManagement(false));
         agentMenuView.display();
     }
 
@@ -132,6 +160,7 @@ public class UiController {
         adminMenuView = new AdminMenuView();
         adminMenuView.addLogoutListener(e -> showLogin());
         adminMenuView.addViewFlightsListener(e -> showFlightSearch());
+        adminMenuView.addManageFlightsListener(e -> showFlightManagement(true));
         adminMenuView.display();
     }
 
@@ -156,16 +185,7 @@ public class UiController {
                 .filter(f -> "All Airlines".equalsIgnoreCase(airline) || f.getAirline().equalsIgnoreCase(airline))
                 .collect(Collectors.toList());
 
-        if (flightResultsView == null) {
-            flightResultsView = new FlightResultsView();
-            flightResultsView.addBackListener(e -> {
-                flightResultsView.dispose();
-                flightResultsView = null;
-                returnToMenu();
-            });
-            flightResultsView.addSelectListener(e -> handleFlightSelection());
-        }
-
+        initFlightResultsView();
         flightResultsView.displayFlights(lastFlights);
         flightResultsView.display();
     }
@@ -187,10 +207,86 @@ public class UiController {
                 bookingHistoryView = null;
                 returnToMenu();
             });
+            bookingHistoryView.addViewDetailsListener(e -> showBookingDetails());
+            bookingHistoryView.addCancelBookingListener(e -> cancelSelectedBooking());
+            bookingHistoryView.addModifyBookingListener(e -> modifySelectedBooking());
         }
 
         bookingHistoryView.displayBookings(myBookings);
         bookingHistoryView.display();
+    }
+
+    private void showAgentBookings() {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+        List<Booking> allBookings = bookingService.getAllBookings();
+        if (bookingHistoryView == null) {
+            bookingHistoryView = new BookingHistoryView();
+            bookingHistoryView.addBackListener(e -> {
+                bookingHistoryView.dispose();
+                bookingHistoryView = null;
+                returnToMenu();
+            });
+            bookingHistoryView.addViewDetailsListener(e -> showBookingDetails());
+            bookingHistoryView.addCancelBookingListener(e -> cancelSelectedBooking());
+            bookingHistoryView.addModifyBookingListener(e -> modifySelectedBooking());
+        }
+        bookingHistoryView.displayBookings(allBookings);
+        bookingHistoryView.display();
+    }
+
+    private void showBookingDetails() {
+        Booking b = bookingHistoryView.getSelectedBooking();
+        if (b == null) {
+            JOptionPane.showMessageDialog(null, "Pick a booking first.", "Booking", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        JOptionPane.showMessageDialog(null,
+                "Booking #" + b.getId() +
+                "\nFlight: " + b.getFlightId() +
+                "\nSeat: " + b.getSeatNumber() +
+                "\nStatus: " + b.getStatus(),
+                "Booking Details",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void cancelSelectedBooking() {
+        Booking b = bookingHistoryView.getSelectedBooking();
+        if (b == null) {
+            JOptionPane.showMessageDialog(null, "Pick a booking first.", "Booking", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(null, "Cancel this booking?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            Booking cancelled = new Booking(b.getId(), b.getCustomerId(), b.getFlightId(), b.getSeatNumber(), b.getBookingDate(), "CANCELLED");
+            bookingService.updateBooking(b.getId(), cancelled);
+            refreshBookings();
+        }
+    }
+
+    private void modifySelectedBooking() {
+        Booking b = bookingHistoryView.getSelectedBooking();
+        if (b == null) {
+            JOptionPane.showMessageDialog(null, "Pick a booking first.", "Booking", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String newSeat = JOptionPane.showInputDialog("New seat number:", b.getSeatNumber());
+        if (newSeat == null || newSeat.isBlank()) {
+            return;
+        }
+        Booking updated = new Booking(b.getId(), b.getCustomerId(), b.getFlightId(), newSeat, b.getBookingDate(), b.getStatus());
+        bookingService.updateBooking(b.getId(), updated);
+        refreshBookings();
+    }
+
+    private void refreshBookings() {
+        if (currentUser == null || bookingHistoryView == null) return;
+        List<Booking> myBookings = bookingService.getAllBookings().stream()
+                .filter(b -> b.getCustomerId() == currentUser.getId())
+                .collect(Collectors.toList());
+        bookingHistoryView.displayBookings(myBookings);
     }
 
     private void showPaymentHistory() {
@@ -210,10 +306,253 @@ public class UiController {
                 paymentHistoryView = null;
                 returnToMenu();
             });
+            paymentHistoryView.addViewDetailsListener(e -> openPaymentDetails());
         }
 
         paymentHistoryView.displayPayments(myPayments);
         paymentHistoryView.display();
+    }
+
+    private void showAllPayments() {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+        if (paymentHistoryView == null) {
+            paymentHistoryView = new PaymentHistoryView();
+            paymentHistoryView.addBackListener(e -> {
+                paymentHistoryView.dispose();
+                paymentHistoryView = null;
+                returnToMenu();
+            });
+            paymentHistoryView.addViewDetailsListener(e -> openPaymentDetails());
+        }
+        paymentHistoryView.displayPayments(paymentService.getAllPayments());
+        paymentHistoryView.display();
+    }
+
+    private void openPaymentDetails() {
+        Payment p = paymentHistoryView.getSelectedPayment();
+        if (p == null) {
+            JOptionPane.showMessageDialog(null, "Pick a payment first.", "Payments", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        PaymentView pv = new PaymentView();
+        pv.displayAmount(p.getAmount());
+        pv.showError("Enter card info to re-pay booking #" + p.getBookingId());
+        pv.display();
+    }
+
+    private void showFlightManagement(boolean requestEdit) {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+        if (currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.AGENT) {
+            JOptionPane.showMessageDialog(null, "You do not have access.", "Access denied", JOptionPane.WARNING_MESSAGE);
+            returnToMenu();
+            return;
+        }
+
+        if (flightManagementView == null) {
+            flightManagementView = new FlightManagementView();
+            flightManagementView.addBackListener(e -> {
+                flightManagementView.dispose();
+                flightManagementView = null;
+                returnToMenu();
+            });
+            flightManagementView.addAddListener(e -> handleAddFlight());
+            flightManagementView.addUpdateListener(e -> handleUpdateFlight());
+            flightManagementView.addRemoveListener(e -> handleRemoveFlight());
+            flightManagementView.addClearListener(e -> flightManagementView.clearFields());
+        }
+
+        boolean canEdit = requestEdit && currentUser.getRole() == Role.ADMIN;
+        flightManagementView.setEditingEnabled(canEdit);
+        flightManagementView.displayFlights(flightService.getAllFlights());
+        flightManagementView.display();
+    }
+
+    private void showCustomerProfiles() {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+        if (customerProfileView == null) {
+            customerProfileView = new CustomerProfileView();
+            customerProfileView.addBackListener(e -> {
+                customerProfileView.dispose();
+                customerProfileView = null;
+                returnToMenu();
+            });
+            customerProfileView.addClearListener(e -> customerProfileView.clearFields());
+            customerProfileView.addAddListener(e -> handleAddCustomer());
+            customerProfileView.addUpdateListener(e -> handleUpdateCustomer());
+            customerProfileView.addSearchListener(e -> refreshCustomerTable());
+        }
+        refreshCustomerTable();
+        customerProfileView.display();
+    }
+
+    private void handleAddCustomer() {
+        String name = customerProfileView.getCustomerName();
+        String email = customerProfileView.getCustomerEmail();
+        String pass = customerProfileView.getCustomerPassword();
+        if (name.isBlank() || email.isBlank() || pass.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Fill in name, email, and password.", "Customer", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        userService.createUser(new User(0, name, email, pass, Role.CUSTOMER));
+        refreshCustomerTable();
+        customerProfileView.clearFields();
+    }
+
+    private void handleUpdateCustomer() {
+        User selected = customerProfileView.getSelectedCustomer();
+        if (selected == null) {
+            JOptionPane.showMessageDialog(null, "Pick a customer row first.", "Customer", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String name = customerProfileView.getCustomerName();
+        String email = customerProfileView.getCustomerEmail();
+        String pass = customerProfileView.getCustomerPassword();
+        if (name.isBlank() || email.isBlank() || pass.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Fill in name, email, and password.", "Customer", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        userService.updateUser(selected.getId(), new User(selected.getId(), name, email, pass, Role.CUSTOMER));
+        refreshCustomerTable();
+    }
+
+    private void refreshCustomerTable() {
+        List<User> users = userService.getAllUsers();
+        String q = customerProfileView.getSearchQuery().toLowerCase();
+        List<User> customers = users.stream()
+                .filter(u -> u.getRole() == Role.CUSTOMER)
+                .filter(u -> q.isBlank() || u.getName().toLowerCase().contains(q) || u.getEmail().toLowerCase().contains(q))
+                .collect(Collectors.toList());
+        customerProfileView.displayCustomers(customers);
+    }
+
+    private void handleAddFlight() {
+        if (!isAdmin()) {
+            JOptionPane.showMessageDialog(null, "Only administrators can add flights.", "Access denied", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Flight flight = buildFlightFromForm(false);
+        if (flight == null) return;
+        flightService.addFlight(flight);
+        refreshFlightsTable();
+        flightManagementView.clearFields();
+    }
+
+    private void handleUpdateFlight() {
+        if (!isAdmin()) {
+            JOptionPane.showMessageDialog(null, "Only administrators can update flights.", "Access denied", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String idStr = flightManagementView.getFlightId();
+        if (idStr == null || idStr.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Select a flight to update.", "Update Flight", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Invalid flight ID.", "Update Flight", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Flight flight = buildFlightFromForm(true);
+        if (flight == null) return;
+        flightService.updateFlight(id, flight);
+        refreshFlightsTable();
+    }
+
+    private void handleRemoveFlight() {
+        if (!isAdmin()) {
+            JOptionPane.showMessageDialog(null, "Only administrators can remove flights.", "Access denied", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String idStr = flightManagementView.getFlightId();
+        if (idStr == null || idStr.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Select a flight to remove.", "Remove Flight", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Invalid flight ID.", "Remove Flight", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this flight?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            flightService.removeFlight(id);
+            refreshFlightsTable();
+            flightManagementView.clearFields();
+        }
+    }
+
+    private Flight buildFlightFromForm(boolean requireId) {
+        String airline = flightManagementView.getAirline();
+        String origin = flightManagementView.getOrigin();
+        String destination = flightManagementView.getDestination();
+        String departureStr = flightManagementView.getDepartureDate();
+        String arrivalStr = flightManagementView.getArrivalDate();
+        String priceStr = flightManagementView.getPrice();
+        String seatsStr = flightManagementView.getSeats();
+
+        if (airline.isBlank() || origin.isBlank() || destination.isBlank()
+                || departureStr.isBlank() || arrivalStr.isBlank() || priceStr.isBlank() || seatsStr.isBlank()) {
+            JOptionPane.showMessageDialog(null, "All fields except Flight ID are required.", "Validation", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        Date departure = parseDateTime(departureStr);
+        Date arrival = parseDateTime(arrivalStr);
+        if (departure == null || arrival == null) {
+            JOptionPane.showMessageDialog(null, "Dates must be in format yyyy-MM-dd HH:mm.", "Validation", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        float price;
+        int seats;
+        try {
+            price = Float.parseFloat(priceStr);
+            seats = Integer.parseInt(seatsStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Price must be a number and seats must be an integer.", "Validation", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        int id = 0;
+        if (requireId) {
+            try {
+                id = Integer.parseInt(flightManagementView.getFlightId());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid flight ID.", "Validation", JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        }
+
+        return new Flight(id, airline, origin, destination, departure, arrival, price, seats);
+    }
+
+    private Date parseDateTime(String text) {
+        try {
+            return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").parse(text);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void refreshFlightsTable() {
+        flightManagementView.displayFlights(flightService.getAllFlights());
+    }
+
+    private boolean isAdmin() {
+        return currentUser != null && currentUser.getRole() == Role.ADMIN;
     }
 
     private void handleFlightSelection() {
@@ -306,6 +645,15 @@ public class UiController {
         if (currentUser == null) {
             JOptionPane.showMessageDialog(null, "Please log in again.", "Session expired", JOptionPane.WARNING_MESSAGE);
             showLogin();
+            return;
+        }
+
+        String card = paymentView.getCardNumber();
+        String holder = paymentView.getCardHolder();
+        String exp = paymentView.getExpiryDate();
+        String cvv = paymentView.getCvv();
+        if (card.isBlank() || holder.isBlank() || exp.isBlank() || cvv.isBlank()) {
+            paymentView.showError("Enter card, name, expiry, and CVV first.");
             return;
         }
 
@@ -426,6 +774,22 @@ public class UiController {
         if (loginView != null) {
             loginView.dispose();
             loginView = null;
+        }
+        if (roleSelectionView != null) {
+            roleSelectionView.dispose();
+            roleSelectionView = null;
+        }
+    }
+
+    private void initFlightResultsView() {
+        if (flightResultsView == null) {
+            flightResultsView = new FlightResultsView();
+            flightResultsView.addBackListener(e -> {
+                flightResultsView.dispose();
+                flightResultsView = null;
+                returnToMenu();
+            });
+            flightResultsView.addSelectListener(e -> handleFlightSelection());
         }
     }
 }

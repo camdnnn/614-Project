@@ -115,7 +115,13 @@ public class BookingHistoryView {
         int customerId = (Integer) tableModel.getValueAt(selectedRow, 1);
         int flightId = (Integer) tableModel.getValueAt(selectedRow, 2);
         String seatNumber = (String) tableModel.getValueAt(selectedRow, 3);
-        Date bookingDate = (Date) tableModel.getValueAt(selectedRow, 4);
+        String dateStr = tableModel.getValueAt(selectedRow, 4).toString();
+        Date bookingDate;
+        try {
+            bookingDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+        } catch (Exception e) {
+            bookingDate = new Date();
+        }
         String status = (String) tableModel.getValueAt(selectedRow, 5);
         
         Booking booking = new Booking(id, customerId, flightId, seatNumber, bookingDate, status);

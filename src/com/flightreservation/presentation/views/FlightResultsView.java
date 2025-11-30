@@ -63,10 +63,12 @@ public class FlightResultsView {
         // Table in scroll pane
         JScrollPane scrollPane = new JScrollPane(flightsTable);
         scrollPane.setPreferredSize(new Dimension(850, 350));
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // No results label
-        mainPanel.add(noResultsLabel, BorderLayout.CENTER);
+        // Center area holds the table with a status label beneath it
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(noResultsLabel, BorderLayout.SOUTH);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));

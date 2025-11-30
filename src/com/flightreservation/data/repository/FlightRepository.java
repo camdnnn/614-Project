@@ -10,19 +10,18 @@ import java.util.List;
 public class FlightRepository extends Repository<Flight> {
 
     public void create(Flight data) {
-        String sql = "INSERT INTO flights (id, airline, origin, destination, departure, arrival, price, seats_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO flights (airline, origin, destination, departure, arrival, price, seats_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getInstance();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, data.getId());
-            stmt.setString(2, data.getAirline());
-            stmt.setString(3, data.getOrigin());
-            stmt.setString(4, data.getDestination());
-            stmt.setDate(5, new Date(data.getDeparture().getTime()));
-            stmt.setDate(6, new Date(data.getArrival().getTime()));
-            stmt.setDouble(7, data.getPrice());
-            stmt.setInt(8, data.getAvailableSeats());
+            stmt.setString(1, data.getAirline());
+            stmt.setString(2, data.getOrigin());
+            stmt.setString(3, data.getDestination());
+            stmt.setTimestamp(4, new Timestamp(data.getDeparture().getTime()));
+            stmt.setTimestamp(5, new Timestamp(data.getArrival().getTime()));
+            stmt.setDouble(6, data.getPrice());
+            stmt.setInt(7, data.getAvailableSeats());
 
             stmt.executeUpdate();
 
@@ -60,8 +59,8 @@ public class FlightRepository extends Repository<Flight> {
             stmt.setString(1, data.getAirline());
             stmt.setString(2, data.getOrigin());
             stmt.setString(3, data.getDestination());
-            stmt.setDate(4, new Date(data.getDeparture().getTime()));
-            stmt.setDate(5, new Date(data.getArrival().getTime()));
+            stmt.setTimestamp(4, new Timestamp(data.getDeparture().getTime()));
+            stmt.setTimestamp(5, new Timestamp(data.getArrival().getTime()));
             stmt.setDouble(6, data.getPrice());
             stmt.setInt(7, data.getAvailableSeats());
             stmt.setInt(8, id);
@@ -113,8 +112,8 @@ public class FlightRepository extends Repository<Flight> {
             rs.getString("airline"),
             rs.getString("origin"),
             rs.getString("destination"),
-            rs.getDate("departure"),
-            rs.getDate("arrival"),
+            rs.getTimestamp("departure"),
+            rs.getTimestamp("arrival"),
             rs.getFloat("price"),
             rs.getInt("seats_available")
         );

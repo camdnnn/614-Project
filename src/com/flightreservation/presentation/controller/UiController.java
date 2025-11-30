@@ -20,12 +20,14 @@ import com.flightreservation.model.User;
 import com.flightreservation.presentation.views.AdminMenuView;
 import com.flightreservation.presentation.views.AgentMenuView;
 import com.flightreservation.presentation.views.BookingConfirmationView;
+import com.flightreservation.presentation.views.BookingHistoryView;
 import com.flightreservation.presentation.views.BookingView;
 import com.flightreservation.presentation.views.CustomerMenuView;
 import com.flightreservation.presentation.views.FlightResultsView;
 import com.flightreservation.presentation.views.FlightSearchView;
 import com.flightreservation.presentation.views.LoginView;
 import com.flightreservation.presentation.views.MonthlyNewsView;
+import com.flightreservation.presentation.views.PaymentHistoryView;
 import com.flightreservation.presentation.views.PaymentView;
 
 /**
@@ -52,6 +54,8 @@ public class UiController {
     private PaymentView paymentView;
     private MonthlyNewsView newsView;
     private BookingConfirmationView confirmationView;
+    private BookingHistoryView bookingHistoryView;
+    private PaymentHistoryView paymentHistoryView;
 
     public UiController(AuthService authService,
                         NewsService newsService,
@@ -109,6 +113,8 @@ public class UiController {
         customerMenuView = new CustomerMenuView();
         customerMenuView.addLogoutListener(e -> showLogin());
         customerMenuView.addViewNewsListener(e -> showNews());
+        customerMenuView.addViewBookingsListener(e -> showBookingHistory());
+        customerMenuView.addViewPaymentsListener(e -> showPaymentHistory());
         customerMenuView.addSearchFlightsListener(e -> showFlightSearch());
         customerMenuView.display();
     }
@@ -162,6 +168,52 @@ public class UiController {
 
         flightResultsView.displayFlights(lastFlights);
         flightResultsView.display();
+    }
+
+    private void showBookingHistory() {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+
+        List<Booking> myBookings = bookingService.getAllBookings().stream()
+                .filter(b -> b.getCustomerId() == currentUser.getId())
+                .collect(Collectors.toList());
+
+        if (bookingHistoryView == null) {
+            bookingHistoryView = new BookingHistoryView();
+            bookingHistoryView.addBackListener(e -> {
+                bookingHistoryView.dispose();
+                bookingHistoryView = null;
+                returnToMenu();
+            });
+        }
+
+        bookingHistoryView.displayBookings(myBookings);
+        bookingHistoryView.display();
+    }
+
+    private void showPaymentHistory() {
+        if (currentUser == null) {
+            showLogin();
+            return;
+        }
+
+        List<Payment> myPayments = paymentService.getAllPayments().stream()
+                .filter(p -> p.getCustomerId() == currentUser.getId())
+                .collect(Collectors.toList());
+
+        if (paymentHistoryView == null) {
+            paymentHistoryView = new PaymentHistoryView();
+            paymentHistoryView.addBackListener(e -> {
+                paymentHistoryView.dispose();
+                paymentHistoryView = null;
+                returnToMenu();
+            });
+        }
+
+        paymentHistoryView.displayPayments(myPayments);
+        paymentHistoryView.display();
     }
 
     private void handleFlightSelection() {
